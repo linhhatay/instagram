@@ -1,8 +1,12 @@
 const routes = {
-    home: '/',
+    login: '/',
+    register: '/register',
     messages: '/messages',
     explore: '/explore',
-    profile: '/:nickname',
+    profile: '/:nickname/*',
+    albums: '*',
+    tagged: 'tagged',
+    home: '/',
 };
 
 export default routes;

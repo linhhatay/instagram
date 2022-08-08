@@ -4,7 +4,6 @@ import Image from '~/components/Image';
 import styles from './Modal.module.scss';
 
 import { BsChevronDown } from 'react-icons/bs';
-import { IoIosArrowRoundBack } from 'react-icons/io';
 import { GoLocation } from 'react-icons/go';
 import { FiSmile } from 'react-icons/fi';
 import { SelectIcon } from '~/components/Icons';
@@ -12,17 +11,14 @@ import { FaTimes } from 'react-icons/fa';
 
 const cx = classNames.bind(styles);
 
-function Explore() {
+function Explore({ setIsModal }) {
     return (
-        <div className={cx('wrapper')}>
-            <button className={cx('close')}>
+        <div className={cx('wrapper')} onClick={() => setIsModal(false)}>
+            <button className={cx('close')} onClick={() => setIsModal(false)}>
                 <FaTimes />
             </button>
-            <div className={cx('container')}>
+            <div className={cx('container')} onClick={(e) => e.stopPropagation()}>
                 <div className={cx('header')}>
-                    {/* <button className={cx('back')}>
-                        <IoIosArrowRoundBack />
-                    </button> */}
                     <h1 className={cx('title')}>Create new post</h1>
                     <button className={cx('shared')}>Share</button>
                 </div>

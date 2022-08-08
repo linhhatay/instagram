@@ -11,6 +11,8 @@ import Menu from '~/components/Popper/Menu';
 import Search from '../Search';
 import styles from './Header.module.scss';
 import config from '~/config';
+import { useState } from 'react';
+import Modal from '~/components/Modal';
 
 const cx = classNames.bind(styles);
 
@@ -35,12 +37,21 @@ const MENU_ITEMS = [
     },
     {
         title: 'Log Out',
+        action: true,
     },
 ];
 
 function Header() {
+    const [isModal, setIsModal] = useState(false);
+
+    const handleOpenModal = () => {
+        setIsModal(true);
+    };
+
     return (
         <header className={cx('wrapper')}>
+            {isModal && <Modal setIsModal={setIsModal} />}
+
             <div className={cx('inner')}>
                 <Link to={config.routes.home} className={cx('back')}>
                     <img
@@ -55,7 +66,7 @@ function Header() {
                 <div className={cx('actions')}>
                     <Button className={cx('btn')} to={config.routes.home} leftIcon={<HomeIcon />}></Button>
                     <Button className={cx('btn')} to={config.routes.messages} leftIcon={<InboxIcon />}></Button>
-                    <Button className={cx('btn')} leftIcon={<PostIcon />}></Button>
+                    <Button className={cx('btn')} leftIcon={<PostIcon />} onClick={handleOpenModal}></Button>
                     <Button className={cx('btn')} to={config.routes.explore} leftIcon={<ExploreIcon />}></Button>
                     <Button className={cx('btn')} leftIcon={<HeartIcon />}></Button>
                     <Menu items={MENU_ITEMS}>
