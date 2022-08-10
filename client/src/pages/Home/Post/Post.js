@@ -4,29 +4,43 @@ import { FiSmile } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { CommentIcon, HeartIcon, InboxIcon, SaveIcon } from '~/components/Icons';
 import Image from '~/components/Image';
+import Menu from '~/components/Popper/Menu';
 import styles from './Post.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Post() {
+const MENU_ITEMS = [
+    {
+        title: 'Chỉnh sửa',
+    },
+    {
+        title: 'Xóa',
+    },
+];
+
+function Post({ content, location, image }) {
+    const user = JSON.parse(localStorage.getItem('user')).user;
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
                 <div className={cx('info')}>
-                    <Image className={cx('avatar')} src="https://znews-stc.zdn.vn/static/topic/person/messi.jpg" />
+                    <Image className={cx('avatar')} src={user.avatar} />
                     <div className={cx('desc')}>
                         <Link to="" className={cx('user-name')}>
-                            leomessi
+                            {user.username}
                         </Link>
-                        <div className={cx('location')}>Bloomfield Stadium</div>
+                        <div className={cx('location')}>{location}</div>
                     </div>
                 </div>
-                <div className={cx('options')}>
-                    <BiDotsHorizontalRounded />
-                </div>
+                <Menu items={MENU_ITEMS}>
+                    <div className={cx('options')}>
+                        <BiDotsHorizontalRounded />
+                    </div>
+                </Menu>
             </div>
             <div className={cx('content')}>
-                <Image className={cx('image')} src="https://znews-stc.zdn.vn/static/topic/person/messi.jpg" />
+                <Image className={cx('image')} src={image} />
                 <div className={cx('actions')}>
                     <div>
                         <button className={cx('action-btn')}>
@@ -48,7 +62,7 @@ function Post() {
                 <div className={cx('post')}>
                     <span className={cx('likes')}>3,029,129 likes</span>
                     <div className={cx('details')}>
-                        leomessi&nbsp; Felices porque queríamos arrancar la temporada ganando esta Copa, vamosss!!!{' '}
+                        {user.username}&nbsp; {content}
                     </div>
                     <button className={cx('load-more')}>
                         View All <span>22,413 </span> comments
@@ -59,7 +73,7 @@ function Post() {
                             <HeartIcon height={12} width={12} />
                         </button>
                     </div>
-                    <div className={cx('times')}>8 HOURS AGO</div>
+                    <div className={cx('times')}>1 HOURS AGO</div>
                 </div>
                 <div className={cx('comment')}>
                     <form>

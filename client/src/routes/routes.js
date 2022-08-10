@@ -2,20 +2,18 @@ import Explore from '~/pages/Explore';
 import Home from '~/pages/Home';
 import Messages from '~/pages/Messages';
 import Profile from '~/pages/Profile';
+import Register from '~/pages/Register';
+import Settings from '~/pages/Settings';
 import Login from '~/pages/Login';
 
 import config from '~/config';
-import Register from '~/pages/Register';
-import Albums from '~/pages/Profile/Albums';
-import Tagged from '~/pages/Profile/Tagged';
 
 const privateRoutes = [
     { path: config.routes.home, component: Home },
     { path: config.routes.messages, component: Messages },
     { path: config.routes.explore, component: Explore },
     { path: config.routes.profile, component: Profile },
-    { path: config.routes.albums, component: Albums },
-    { path: config.routes.tagged, component: Tagged },
+    { path: config.routes.settings, component: Settings },
 ];
 
 const publicRoutes = [

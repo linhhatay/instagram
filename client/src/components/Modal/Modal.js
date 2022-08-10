@@ -5,13 +5,55 @@ import styles from './Modal.module.scss';
 
 import { BsChevronDown } from 'react-icons/bs';
 import { GoLocation } from 'react-icons/go';
-import { FiSmile } from 'react-icons/fi';
+import { FiLoader, FiSmile } from 'react-icons/fi';
 import { SelectIcon } from '~/components/Icons';
 import { FaTimes } from 'react-icons/fa';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createPost, getPosts } from '~/redux/reducers/postSlice';
+import Loading from '../Loading';
+import { Image as Img } from 'cloudinary-react';
+import { IoIosArrowRoundBack } from 'react-icons/io';
+import axios from 'axios';
 
 const cx = classNames.bind(styles);
 
 function Explore({ setIsModal }) {
+    const [content, setContent] = useState('');
+    const [location, setLocation] = useState('');
+    const [image, setImage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const dispatch = useDispatch();
+    const user = JSON.parse(localStorage.getItem('user')).user;
+
+    const handleChange = async (e) => {
+        const formData = new FormData();
+        formData.append('file', e.target.files[0]);
+        formData.append('upload_preset', 'hpeidups');
+
+        try {
+            setIsLoading(true);
+            const res = await axios.post('https://api.cloudinary.com/v1_1/dvfwekbrc/image/upload', formData);
+            setImage(res.data.url);
+            setIsLoading(false);
+        } catch (error) {
+            console.log('Có lỗi', error);
+        }
+    };
+
+    const handleCreatePost = () => {
+        const data = { content: content, location: location, image: image };
+
+        if (!image && !content) {
+            alert('Vui lòng nhập bài viết!!!');
+            return;
+        }
+
+        dispatch(createPost(data));
+        setIsModal(false);
+    };
+
     return (
         <div className={cx('wrapper')} onClick={() => setIsModal(false)}>
             <button className={cx('close')} onClick={() => setIsModal(false)}>
@@ -19,34 +61,60 @@ function Explore({ setIsModal }) {
             </button>
             <div className={cx('container')} onClick={(e) => e.stopPropagation()}>
                 <div className={cx('header')}>
+                    <button className={cx('back')} onClick={() => setImage('')}>
+                        <IoIosArrowRoundBack />
+                    </button>
                     <h1 className={cx('title')}>Create new post</h1>
-                    <button className={cx('shared')}>Share</button>
+                    <button type="submit" id="submit" className={cx('shared')} onClick={handleCreatePost}>
+                        Share
+                    </button>
                 </div>
                 <div className={cx('content')}>
                     <div className={cx('select')}>
-                        <button>
-                            <SelectIcon />
-                        </button>
-                        <h2>Drag photos and videos here</h2>
-                        <Button primary className={cx('choose')}>
-                            <input type="file" />
-                            Select from computer
-                        </Button>
+                        {image ? (
+                            <div className={cx('image')}>
+                                <Img cloudName="dvfwekbrc" publicId={image} />
+                            </div>
+                        ) : isLoading ? (
+                            <FiLoader className={cx('loading')} />
+                        ) : (
+                            <>
+                                <button>
+                                    <SelectIcon />
+                                </button>
+                                <h2>Drag photos and videos here</h2>
+                                <Button primary className={cx('choose')}>
+                                    <input type="file" accept=".jpg, .png" onChange={handleChange} />
+                                    Select from computer
+                                </Button>
+                            </>
+                        )}
                     </div>
-                    <div className={cx('post')}>
+                    <form className={cx('post')}>
                         <div className={cx('user')}>
                             <Image className={cx('avatar')} src="111" />
-                            <span>lih_hatay24</span>
+                            <span>{user.username}</span>
                         </div>
                         <div className={cx('text')}>
-                            <textarea placeholder="Write a caption..."></textarea>
+                            <textarea
+                                placeholder="Write a caption..."
+                                value={content}
+                                spellCheck={false}
+                                onChange={(e) => setContent(e.target.value)}
+                            ></textarea>
                             <div className={cx('icons')}>
                                 <FiSmile />
                             </div>
                         </div>
                         <div className={cx('options')}>
                             <div className={cx('location')}>
-                                <input type="text" placeholder="Add location" />
+                                <input
+                                    type="text"
+                                    placeholder="Add location"
+                                    value={location}
+                                    spellCheck={false}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                />
                                 <button className={cx('icon-location')}>
                                     <GoLocation />
                                 </button>
@@ -58,7 +126,7 @@ function Explore({ setIsModal }) {
                                 Advanced settings
                             </Button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

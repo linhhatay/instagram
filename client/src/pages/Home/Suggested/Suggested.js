@@ -1,19 +1,38 @@
+import axios from 'axios';
 import classNames from 'classnames/bind';
-import { useEffect } from 'react';
-import AccountItem from '~/components/AccountItem';
+import { useEffect, useState } from 'react';
 import Image from '~/components/Image';
 import styles from './Suggested.module.scss';
 
 const cx = classNames.bind(styles);
 
 function Suggested() {
+    const user = JSON.parse(localStorage.getItem('user')).user;
+    const [suggestions, setSuggestions] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get(`https://tiktok.fullstack.edu.vn/api/users/search`, {
+                params: {
+                    q: 'h',
+                    type: 'less',
+                },
+            })
+            .then((res) => {
+                setSuggestions(res.data.data);
+            })
+            .catch(() => {
+                console.log('Error!!');
+            });
+    }, []);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('account')}>
-                <Image className={cx('avatar')} src="https://znews-stc.zdn.vn/static/topic/person/messi.jpg" />
+                <Image className={cx('avatar')} src={user.avatar} />
                 <div className={cx('info')}>
-                    <div className={cx('user-name')}>lih_hatay24</div>
-                    <h4 className={cx('name')}>Linh Nguyễn</h4>
+                    <div className={cx('user-name')}>{user.username}</div>
+                    <h4 className={cx('name')}>{user.fullname}</h4>
                 </div>
                 <button className={cx('switch')}>Switch</button>
             </div>
@@ -22,14 +41,16 @@ function Suggested() {
                     <h4 className={cx('title')}>Suggestions For You</h4>
                     <button>See All</button>
                 </div>
-                <div className={cx('item')}>
-                    <Image className={cx('avatar')} src="https://znews-stc.zdn.vn/static/topic/person/messi.jpg" />
-                    <div className={cx('info')}>
-                        <div className={cx('user-name')}>lih_hatay24</div>
-                        <h4 className={cx('name')}>Linh Nguyễn</h4>
+                {suggestions.map((item) => (
+                    <div className={cx('item')} key={item.id}>
+                        <Image className={cx('avatar')} src={item.avatar} />
+                        <div className={cx('info')}>
+                            <div className={cx('user-name')}>{item.nickname}</div>
+                            <h4 className={cx('name')}>{item.full_name || 'Suggested for you'} </h4>
+                        </div>
+                        <button className={cx('switch')}>Follow</button>
                     </div>
-                    <button className={cx('switch')}>Follow</button>
-                </div>
+                ))}
             </div>
             <footer className={cx('footer')}>
                 <nav className={cx('link')}>

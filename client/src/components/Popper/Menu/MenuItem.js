@@ -2,9 +2,9 @@ import classNames from 'classnames/bind';
 import styles from './Menu.module.scss';
 import Button from '~/components/Button';
 
-import { useDispatch } from 'react-redux';
 import { logoutUser } from '~/redux/reducers/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const cx = classNames.bind(styles);
 

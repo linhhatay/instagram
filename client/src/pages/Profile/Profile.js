@@ -8,21 +8,42 @@ import config from '~/config';
 import Footer from '~/layouts/components/Footer';
 import styles from './Profile.module.scss';
 
+import Toast from '~/components/Toast';
+import { hideToast, showToast } from '~/redux/reducers/toastSlice';
+import { useDispatch, useSelector } from 'react-redux';
+
 const cx = classNames.bind(styles);
 
 function Profile() {
     const [isActive, setIsActive] = useState(true);
+    const user = JSON.parse(localStorage.getItem('user')).user;
+
+    const toast = useSelector((state) => state.toast);
+    const dispatch = useDispatch();
+
+    const handleShowToast = () => {
+        dispatch(showToast());
+        setTimeout(() => {
+            dispatch(hideToast());
+        }, 2000);
+    };
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
+                {toast.status && (
+                    <Toast
+                        title={'Thông báo!'}
+                        message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'}
+                    />
+                )}
                 <header className={cx('header')}>
                     <div className={cx('avatar')}>
                         <Image src="123" />
                     </div>
                     <div className={cx('info')}>
                         <div className={cx('actions')}>
-                            <h2 className={cx('username')}>lih_hatay24</h2>
+                            <h2 className={cx('username')}>{user.username}</h2>
                             <Button className={cx('edit')} outline>
                                 Edit profile
                             </Button>
@@ -39,10 +60,10 @@ function Profile() {
                                     <path d="M64.23 69.98c-8.66 0-17.32-.09-26 0-3.58.06-5.07-1.23-5.12-4.94-.16-11.7 8.31-20.83 20-21.06 7.32-.15 14.65-.14 22 0 11.75.22 20.24 9.28 20.1 21 0 3.63-1.38 5.08-5 5-8.62-.1-17.28 0-25.98 0zm19-50.8A19 19 0 1164.32 0a19.05 19.05 0 0118.91 19.18zM14.76 50.01a5 5 0 01-3.37-1.31L.81 39.09a2.5 2.5 0 01-.16-3.52l3.39-3.7a2.49 2.49 0 013.52-.16l7.07 6.38 15.73-15.51a2.48 2.48 0 013.52 0l3.53 3.58a2.49 2.49 0 010 3.52L18.23 48.57a5 5 0 01-3.47 1.44z"></path>
                                 </svg>
                             </button>
-                            <button className={cx('options')}>
+                            <button className={cx('options')} onClick={handleShowToast}>
                                 <BiDotsHorizontalRounded />
                             </button>
-                            <button className={cx('setting')}>
+                            <button className={cx('setting')} onClick={handleShowToast}>
                                 <svg
                                     aria-label="Options"
                                     color="#262626"
@@ -85,8 +106,8 @@ function Profile() {
                                 </div>
                             </div>
                             <div className={cx('bio')}>
-                                <span>Linh Nguyễn</span>
-                                <div>Information technology</div>
+                                <span>{user.fullname}</span>
+                                <div>{user.bio}</div>
                             </div>
                         </div>
                     </div>

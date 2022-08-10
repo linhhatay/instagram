@@ -23,15 +23,15 @@
 
 .container {
     width: 875px;
-    height: 578px;
+    height: 577px;
     background-color: white;
     border-radius: 12px;
     overflow: hidden;
 
     @media screen and (max-width: 992px) {
-        // width: 54vw;
         height: 500px;
         margin: 0 8px;
+        overflow: overlay;
     }
 }
 
@@ -47,6 +47,7 @@
     font-size: 40px;
     display: flex;
     padding: 1px 4px;
+    cursor: pointer;
 }
 
 .title {
@@ -93,6 +94,10 @@
         font-weight: 200;
     }
 
+    button {
+        margin-top: 24px;
+    }
+
     input {
         opacity: 0;
         position: absolute;
@@ -106,14 +111,23 @@
     @media screen and (max-width: 992px) {
         width: 100%;
         height: auto;
-        padding: 16px;
-        border: 1px solid rgb(219, 219, 219);
-        border-radius: 8px;
-        // margin-top: 21px;
 
         h2 {
             display: none;
         }
+    }
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    font-size: 0px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
 }
 
@@ -129,11 +143,6 @@
     @media screen and (max-width: 768px) {
         // display: none;
     }
-}
-
-.image {
-    width: 100%;
-    height: 100%;
 }
 
 .user {
@@ -226,5 +235,19 @@
 
     @media screen and (max-width: 992px) {
         display: none;
+    }
+}
+
+.loading {
+    animation: spinner 1s linear infinite;
+    margin-top: 80px;
+
+    @keyframes spinner {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 }

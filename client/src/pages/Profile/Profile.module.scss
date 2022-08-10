@@ -49,13 +49,12 @@
 }
 
 .desc {
-    display: flex;
-    flex-direction: column-reverse;
-
     @media screen and (max-width: 576px) {
         position: absolute;
         left: 0;
         right: 0;
+        flex-direction: column-reverse;
+        display: flex;
     }
 }
 
@@ -92,6 +91,7 @@
 
 .add {
     display: flex;
+    cursor: pointer;
     margin-left: 8px;
     padding: 7px 24px;
     border-radius: 4px;
@@ -103,6 +103,7 @@
 }
 
 .options {
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-self: center;
@@ -113,6 +114,7 @@
 }
 
 .setting {
+    cursor: pointer;
     margin-left: 5px;
     padding: 8px;
 

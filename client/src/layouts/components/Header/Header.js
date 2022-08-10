@@ -20,20 +20,22 @@ const MENU_ITEMS = [
     {
         icon: <BiUserCircle />,
         title: 'Profile',
-        to: '/profile',
+        to: config.routes.profile,
     },
     {
         icon: <FiBookmark />,
         title: 'Saved',
+        toast: true,
     },
     {
         icon: <IoSettingsOutline />,
         title: 'Settings',
-        to: '/accounts/edit',
+        to: '/settings',
     },
     {
         icon: <MdOutlineChangeCircle />,
         title: 'Switch account',
+        toast: true,
     },
     {
         title: 'Log Out',
@@ -55,6 +57,7 @@ function Header() {
             <div className={cx('inner')}>
                 <Link to={config.routes.home} className={cx('back')}>
                     <img
+                        onClick={() => window.scrollTo(0, 0)}
                         className={cx('logo')}
                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/840px-Instagram_logo.svg.png"
                         alt="Instagram"

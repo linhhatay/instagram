@@ -3,10 +3,11 @@ const routes = {
     register: '/register',
     messages: '/messages',
     explore: '/explore',
-    profile: '/:nickname/*',
+    settings: '/settings',
     albums: '*',
     tagged: 'tagged',
     home: '/',
+    profile: '/:nickname/*',
 };
 
 export default routes;
