@@ -8,16 +8,10 @@ function Albums() {
     return (
         <div className={cx('content')}>
             <div className={cx('image')}>
-                <Image
-                    className={cx('link')}
-                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-6/275443534_1033184580885319_2682506136463146881_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=G7bdVf6bNPAAX9Utp2x&_nc_oc=AQm3ikaQeScmGEQ6tiErxqEyMZUlgDtMZjdEywc75n2XC0nNp8OWeWLz_-kMlBXFvyA&_nc_ht=scontent.fhan2-3.fna&oh=00_AT8UV8hQ6NXwLfguPaJ3zfUNtH7KXcSG5GhWM4WooXqWtQ&oe=62F5D891"
-                />
+                <Image className={cx('link')} src="" />
             </div>
             <div className={cx('image')}>
-                <Image
-                    className={cx('link')}
-                    src="https://scontent.fhan2-4.fna.fbcdn.net/v/t39.30808-6/260895038_972975416906236_8793988061778913950_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=jP5faAwbB3QAX-gQGr2&_nc_oc=AQlM6CHI-YeQa952YmQYf-jfdVTzHEkNk-fMK2VyGw-7psNASH0eISr31FA6nNnbVLk&_nc_ht=scontent.fhan2-4.fna&oh=00_AT8cC4QxKX9PsEmfdkwi3xq-YVdG4x6yArwFhAySEBN8Ww&oe=62F57C32"
-                />
+                <Image className={cx('link')} src="" />
             </div>
             <div className={cx('image')}>
                 <Image
@@ -26,10 +20,7 @@ function Albums() {
                 />
             </div>
             <div className={cx('image')}>
-                <Image
-                    className={cx('link')}
-                    src="https://scontent.fhan2-2.fna.fbcdn.net/v/t39.30808-6/241712124_924650805072031_7510089811857969789_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=C0wJ_R8bdDAAX9ShVc9&tn=Z5cn-rBvXEZaLYrD&_nc_ht=scontent.fhan2-2.fna&oh=00_AT-v2_ZuPA9MXkZMoFBNruwDe-D5aS_MKAEcVu2UYpxerg&oe=62F66DEC"
-                />
+                <Image className={cx('link')} src="" />
             </div>
             <div className={cx('image')}>
                 <Image

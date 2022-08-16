@@ -27,6 +27,7 @@
     background-color: white;
     border-radius: 12px;
     overflow: hidden;
+    z-index: 12;
 
     @media screen and (max-width: 992px) {
         height: 500px;

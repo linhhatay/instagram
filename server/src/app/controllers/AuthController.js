@@ -2,42 +2,27 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-let refreshTokens = [];
+// GENERATE ACCESS TOKEN
+const createAccessToken = (payload) => {
+    return jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
+        expiresIn: '1d',
+    });
+};
+
+// GENARATE REFRESH TOKEN
+const createRefreshToken = (payload) => {
+    return jwt.sign(payload, process.env.JWT_REFRESH_KEY, {
+        expiresIn: '30d',
+    });
+};
 
 class AuthController {
-    // GENERATE ACCESS TOKEN
-    // generateAccessToken(user) {
-    //     return jwt.sign(
-    //         {
-    //             id: user._id,
-    //         },
-    //         process.env.JWT_ACCESS_KEY,
-    //         {
-    //             expiresIn: '30s',
-    //         },
-    //     );
-    // }
-
-    // GENARATE REFRESH TOKEN
-    // generateRefreshToken(user) {
-    //     return jwt.sign(
-    //         {
-    //             id: user._id,
-    //         },
-    //         process.env.JWT_REFRESH_KEY,
-    //         {
-    //             expiresIn: '365d',
-    //         },
-    //     );
-    // }
-
     // REGISTER
     async registerUser(req, res) {
         try {
             const salt = await bcrypt.genSalt(10);
             const hashed = await bcrypt.hash(req.body.password, salt);
 
-            // Create New User
             const newUser = await new User({
                 email: req.body.email,
                 fullname: req.body.fullname,
@@ -45,9 +30,25 @@ class AuthController {
                 password: hashed,
             });
 
-            // Save to DB
-            const user = await newUser.save();
-            res.status(200).json(user);
+            const access_token = createAccessToken({ id: newUser._id });
+            const refresh_token = createRefreshToken({ id: newUser._id });
+
+            res.cookie('refreshtoken', refresh_token, {
+                httpOnly: true,
+                path: '/api/v1/auth/refresh_token',
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+            });
+
+            await newUser.save();
+
+            res.status(200).json({
+                msg: 'Register Success!',
+                access_token,
+                user: {
+                    ...newUser._doc,
+                    password: '',
+                },
+            });
         } catch (error) {
             res.status(400).json({ error: error });
         }
@@ -56,8 +57,9 @@ class AuthController {
     // LOGIN
     async loginUser(req, res) {
         try {
-            const user = await User.findOne({ username: req.body.username });
-            const invalidPassword = await bcrypt.compare(req.body.password, user.password);
+            const { username, password } = req.body;
+            const user = await User.findOne({ username }).populate('followers', '-password');
+            const invalidPassword = await bcrypt.compare(password, user.password);
 
             if (!user) {
                 return res.status(400).json('Wrong username!');
@@ -68,32 +70,22 @@ class AuthController {
             }
 
             if (user && invalidPassword) {
-                const accessToken = jwt.sign(
-                    {
-                        id: user._id,
-                    },
-                    process.env.JWT_ACCESS_KEY,
-                    {
-                        expiresIn: '30s',
-                    },
-                );
-                const refreshToken = jwt.sign(
-                    {
-                        id: user._id,
-                    },
-                    process.env.JWT_REFRESH_KEY,
-                    {
-                        expiresIn: '365d',
-                    },
-                );
-                refreshTokens.push(refreshToken);
-                res.cookie('refreshToken', refreshToken, {
+                const access_token = createAccessToken({ id: user._id });
+                const refresh_token = createRefreshToken({ id: user._id });
+
+                res.cookie('refreshtoken', refresh_token, {
                     httpOnly: true,
-                    secure: false,
-                    path: '/',
-                    sameSite: 'strict',
+                    path: '/api/v1/auth/refresh_token',
+                    maxAge: 30 * 24 * 60 * 60 * 1000,
                 });
-                return res.status(200).json({ user, accessToken });
+                return res.status(200).json({
+                    msg: 'Login Success!',
+                    access_token,
+                    user: {
+                        ...user._doc,
+                        password: '',
+                    },
+                });
             }
         } catch (error) {
             res.status(400).json({ error: error });
@@ -102,57 +94,43 @@ class AuthController {
 
     // LOGOUT
     async logoutUser(req, res) {
-        res.clearCookie('refreshToken');
-        refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);
-        res.status(200).json('Logout successfully');
+        try {
+            res.clearCookie('refreshtoken', { path: '/api/v1/auth/refresh_token' });
+            res.status(200).json('Logout successfully');
+        } catch (error) {
+            res.status(400).json({ error: error });
+        }
     }
 
-    // REFRESH TOKEN
-    async refreshToken(req, res) {
-        const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken) {
-            return res.status(401).json('You are not authenticated');
-        }
-        if (!refreshTokens.includes(refreshToken)) {
-            return res.status(403).json('Refresh token is not valid');
-        }
-        jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, user) => {
-            if (err) {
-                console(err);
+    async generateAccessToken(req, res) {
+        try {
+            const refresh_token = req.cookies.refreshtoken;
+
+            if (!refresh_token) {
+                return res.status(400).json({ msg: 'Please login now 1 .' });
             }
 
-            refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+            jwt.verify(refresh_token, process.env.JWT_REFRESH_KEY, async (err, result) => {
+                if (err) {
+                    return res.status(500).json({ msg: 'Please login now 2.' });
+                }
 
-            const newAccessToken = jwt.sign(
-                {
-                    id: user._id,
-                },
-                process.env.JWT_ACCESS_KEY,
-                {
-                    expiresIn: '30s',
-                },
-            );
+                const user = await User.findById(result.id)
+                    .select('-password')
+                    .populate('followers following', 'avatar username fullname followers following');
 
-            const newRefreshToken = jwt.sign(
-                {
-                    id: user._id,
-                },
-                process.env.JWT_REFRESH_KEY,
-                {
-                    expiresIn: '365d',
-                },
-            );
+                if (!user) return res.status(400).json({ msg: 'This does not exist.' });
 
-            refreshTokens.push(newRefreshToken);
+                const access_token = createAccessToken({ id: result.id });
 
-            res.cookie('refreshToken', newRefreshToken, {
-                httpOnly: true,
-                secure: false,
-                path: '/',
-                sameSite: 'strict',
+                res.json({
+                    access_token,
+                    user,
+                });
             });
-            res.status(200).json({ accessToken: newAccessToken });
-        });
+        } catch (error) {
+            res.status(400).json({ error: error });
+        }
     }
 }
 

@@ -31,14 +31,13 @@ function Search() {
         setLoading(true);
 
         axios
-            .get(`https://tiktok.fullstack.edu.vn/api/users/search`, {
+            .get(`http://localhost:5000/api/v1/users/search`, {
                 params: {
-                    q: debounceValue,
-                    type: 'less',
+                    username: debounceValue,
                 },
             })
             .then((res) => {
-                setSearchResult(res.data.data);
+                setSearchResult(res.data.users);
                 setLoading(false);
             })
             .catch(() => {
@@ -61,11 +60,12 @@ function Search() {
             <Tippy
                 interactive
                 visible={showResult && searchResult.length > 0}
+                placement="bottom"
                 render={(attrs) => (
                     <div className={cx('search-result')} tabIndex="-1" {...attrs}>
                         <PopperWrapper>
                             {searchResult.map((result) => (
-                                <AccountItem key={result.id} data={result} />
+                                <AccountItem key={result._id} data={result} />
                             ))}
                         </PopperWrapper>
                     </div>

@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const user = JSON.parse(localStorage.getItem('user'));
-
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
+        auth: {
+            token: null,
+            user: null,
+        },
         register: {
             isLoading: false,
             isSucces: false,
@@ -13,11 +15,20 @@ const authSlice = createSlice({
         },
         login: {
             isLoading: false,
-            currentUser: user ? user : null,
             isSucces: false,
             isError: false,
         },
         logout: {
+            isLoading: false,
+            isSucces: false,
+            isError: false,
+        },
+        update: {
+            isLoading: false,
+            isSucces: false,
+            isError: false,
+        },
+        refreshToken: {
             isLoading: false,
             isSucces: false,
             isError: false,
@@ -61,7 +72,9 @@ const authSlice = createSlice({
                 state.login.isLoading = true;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-                state.login.currentUser = action.payload.user;
+                localStorage.setItem('firstLogin', true);
+                state.auth.token = action.payload.access_token;
+                state.auth.user = action.payload.user;
                 state.login.isSucces = true;
                 state.login.isLoading = false;
             })
@@ -75,14 +88,46 @@ const authSlice = createSlice({
                 state.logout.isLoading = true;
             })
             .addCase(logoutUser.fulfilled, (state, action) => {
-                localStorage.removeItem('user');
+                localStorage.removeItem('firstLogin');
                 state.login.currentUser = null;
+                state.auth.token = null;
+                state.auth.user = null;
                 state.logout.isLoading = false;
                 state.logout.isSucces = true;
             })
             .addCase(logoutUser.rejected, (state) => {
                 state.logout.isLoading = false;
                 state.logout.isError = true;
+            })
+
+            // REFRESH TOKEN
+            .addCase(refreshToken.pending, (state) => {
+                state.refreshToken.isLoading = true;
+            })
+            .addCase(refreshToken.fulfilled, (state, action) => {
+                state.auth.token = action.payload.access_token;
+                state.auth.user = action.payload.user;
+                state.refreshToken.isLoading = false;
+                state.refreshToken.isSucces = true;
+            })
+            .addCase(refreshToken.rejected, (state) => {
+                state.refreshToken.isLoading = false;
+                state.refreshToken.isError = true;
+            })
+            // UPDATE USER
+            .addCase(updateUser.pending, (state) => {
+                state.update.isLoading = true;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                console.log(action.payload);
+                state.update.isSucces = true;
+                state.update.isLoading = false;
+                state.update.isError = false;
+                state.auth.user = action.payload.newUser;
+            })
+            .addCase(updateUser.rejected, (state) => {
+                state.update.isError = true;
+                state.update.isLoading = false;
             });
     },
 });
@@ -99,11 +144,6 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (state, 
 export const loginUser = createAsyncThunk('auth/loginUser', async (state, action) => {
     try {
         const res = await axios.post('http://localhost:5000/api/v1/auth/login', state);
-
-        if (res.data) {
-            localStorage.setItem('user', JSON.stringify(res.data));
-        }
-
         return res.data;
     } catch (error) {
         return action.rejectWithValue(error.message);
@@ -113,6 +153,26 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (state, action
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (action) => {
     try {
         await axios.post('http://localhost:5000/api/v1/auth/logout');
+    } catch (error) {
+        return action.rejectWithValue(error.message);
+    }
+});
+
+export const refreshToken = createAsyncThunk('auth/refreshToken', async (state, action) => {
+    try {
+        const res = await axios.post('http://localhost:5000/api/v1/auth/refresh_token', state);
+        console.log(res);
+        return res.data;
+    } catch (error) {
+        return action.rejectWithValue(error.message);
+    }
+});
+
+export const updateUser = createAsyncThunk('auth/updateUser', async (state, action) => {
+    try {
+        const res = await axios.patch(`http://localhost:5000/api/v1/users/edit`, state);
+        console.log(state);
+        return res.data;
     } catch (error) {
         return action.rejectWithValue(error.message);
     }

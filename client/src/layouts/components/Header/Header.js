@@ -13,38 +13,40 @@ import styles from './Header.module.scss';
 import config from '~/config';
 import { useState } from 'react';
 import Modal from '~/components/Modal';
+import { useSelector } from 'react-redux';
 
 const cx = classNames.bind(styles);
 
-const MENU_ITEMS = [
-    {
-        icon: <BiUserCircle />,
-        title: 'Profile',
-        to: config.routes.profile,
-    },
-    {
-        icon: <FiBookmark />,
-        title: 'Saved',
-        toast: true,
-    },
-    {
-        icon: <IoSettingsOutline />,
-        title: 'Settings',
-        to: '/settings',
-    },
-    {
-        icon: <MdOutlineChangeCircle />,
-        title: 'Switch account',
-        toast: true,
-    },
-    {
-        title: 'Log Out',
-        action: true,
-    },
-];
-
 function Header() {
     const [isModal, setIsModal] = useState(false);
+    const auth = useSelector((state) => state.auth.auth);
+
+    const MENU_ITEMS = [
+        {
+            icon: <BiUserCircle />,
+            title: 'Profile',
+            to: `/${auth.user.username}`,
+        },
+        {
+            icon: <FiBookmark />,
+            title: 'Saved',
+            toast: true,
+        },
+        {
+            icon: <IoSettingsOutline />,
+            title: 'Settings',
+            to: '/settings',
+        },
+        {
+            icon: <MdOutlineChangeCircle />,
+            title: 'Switch account',
+            toast: true,
+        },
+        {
+            title: 'Log Out',
+            action: true,
+        },
+    ];
 
     const handleOpenModal = () => {
         setIsModal(true);
@@ -74,7 +76,7 @@ function Header() {
                     <Button className={cx('btn')} leftIcon={<HeartIcon />}></Button>
                     <Menu items={MENU_ITEMS}>
                         <button className={cx('user')}>
-                            <Image className={cx('avatar')} src="1231" />
+                            <Image className={cx('avatar')} src="" />
                         </button>
                     </Menu>
                 </div>

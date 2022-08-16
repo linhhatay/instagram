@@ -20,10 +20,8 @@ import { hideToast, showToast } from '~/redux/reducers/toastSlice';
 const cx = classNames.bind(styles);
 
 function Register() {
-    const [isSuccess, setIsSuccess] = useState(false);
     const register = useSelector((state) => state.auth.register);
     const message = useSelector((state) => state.auth.message);
-
     const toast = useSelector((state) => state.toast);
 
     const dispatch = useDispatch();
@@ -44,14 +42,20 @@ function Register() {
             username: Yup.string().required().min(6),
             password: Yup.string().required().min(6),
         }),
-        onSubmit: (values) => {
-            dispatch(registerUser(values));
+        onSubmit: async (values) => {
+            await dispatch(registerUser(values));
             values.email = '';
             values.fullname = '';
             values.username = '';
             values.password = '';
         },
     });
+
+    useEffect(() => {
+        if (register.isSuccess) {
+            navigate('/');
+        }
+    }, [register.isLoading]);
 
     const handleShowToast = () => {
         dispatch(showToast());
@@ -65,9 +69,6 @@ function Register() {
             {register.isLoading && <Loading />}
             {toast.status && (
                 <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
-            )}
-            {register.isSuccess && message.status && (
-                <Toast title={'Thành công!'} message={'Bạn đã đăng kí tài khoản thành công!'} />
             )}
             {register.isError && message.status && (
                 <Toast error title={'Thất bại!'} message={'Có lỗi xảy ra, vui lòng liên hệ quản trị viên!'} />

@@ -1,38 +1,21 @@
-import axios from 'axios';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Image from '~/components/Image';
 import styles from './Suggested.module.scss';
 
 const cx = classNames.bind(styles);
 
 function Suggested() {
-    const user = JSON.parse(localStorage.getItem('user')).user;
-    const [suggestions, setSuggestions] = useState([]);
-
-    useEffect(() => {
-        axios
-            .get(`https://tiktok.fullstack.edu.vn/api/users/search`, {
-                params: {
-                    q: 'h',
-                    type: 'less',
-                },
-            })
-            .then((res) => {
-                setSuggestions(res.data.data);
-            })
-            .catch(() => {
-                console.log('Error!!');
-            });
-    }, []);
+    const auth = useSelector((state) => state.auth.auth);
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('account')}>
-                <Image className={cx('avatar')} src={user.avatar} />
+                <Image className={cx('avatar')} src="123" />
                 <div className={cx('info')}>
-                    <div className={cx('user-name')}>{user.username}</div>
-                    <h4 className={cx('name')}>{user.fullname}</h4>
+                    <div className={cx('user-name')}>{auth.user.username}</div>
+                    <h4 className={cx('name')}>{auth.user.fullname}</h4>
                 </div>
                 <button className={cx('switch')}>Switch</button>
             </div>
@@ -41,7 +24,7 @@ function Suggested() {
                     <h4 className={cx('title')}>Suggestions For You</h4>
                     <button>See All</button>
                 </div>
-                {suggestions.map((item) => (
+                {/* {suggestions.map((item) => (
                     <div className={cx('item')} key={item.id}>
                         <Image className={cx('avatar')} src={item.avatar} />
                         <div className={cx('info')}>
@@ -50,7 +33,7 @@ function Suggested() {
                         </div>
                         <button className={cx('switch')}>Follow</button>
                     </div>
-                ))}
+                ))} */}
             </div>
             <footer className={cx('footer')}>
                 <nav className={cx('link')}>

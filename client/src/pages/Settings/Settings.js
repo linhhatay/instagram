@@ -1,15 +1,54 @@
 import classNames from 'classnames/bind';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
 import Footer from '~/layouts/components/Footer';
+import { updateUser } from '~/redux/reducers/authSlice';
 import styles from './Settings.module.scss';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Loading from '~/components/Loading';
 
 const cx = classNames.bind(styles);
 
 function Settings() {
+    const [avatar, setAvatar] = useState('');
+    const [fullname, setFullname] = useState('');
+    const [username, setUsername] = useState('');
+    const [bio, setBio] = useState('');
+    const [gender, setGender] = useState('');
+    const [email, setEmail] = useState('');
+
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
+    const auth = useSelector((state) => state.auth.auth);
+    const update = useSelector((state) => state.auth.update);
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+        const data = { id: auth.user._id, avatar, fullname, username, bio, gender, email };
+        dispatch(updateUser(data));
+    };
+
+    const handleGetAvatar = async (e) => {
+        const formData = new FormData();
+        formData.append('file', e.target.files[0]);
+        formData.append('upload_preset', 'hpeidups');
+
+        try {
+            const res = await axios.post('https://api.cloudinary.com/v1_1/dvfwekbrc/image/upload', formData);
+            setAvatar(res.data.url);
+        } catch (error) {
+            console.log('Có lỗi', error);
+        }
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
+                {update.isLoading && <Loading />}
                 <ul className={cx('sidebar')}>
                     <li className={cx('active')}>Edit profile</li>
                     <li>Change password</li>
@@ -96,17 +135,20 @@ function Settings() {
                 </ul>
                 <div className={cx('content')}>
                     <div className={cx('header')}>
-                        <Image className={cx('avatar')} src="123" />
+                        <Image className={cx('avatar')} src={auth.user.avatar} />
                         <div>
-                            <h1>lih_hatay24</h1>
-                            <button>Change profile photo</button>
+                            <h1>{auth.user.username}</h1>
+                            <button className={cx('choose-avatar')}>
+                                <input type="file" accept=".jpg, .png" onChange={handleGetAvatar} />
+                                Change profile photo
+                            </button>
                         </div>
                     </div>
                     <form className={cx('form')}>
                         <div className={cx('form-group')}>
                             <label>Name</label>
                             <div className={cx('value')}>
-                                <input type="text" />
+                                <input type="text" value={fullname} onChange={(e) => setFullname(e.target.value)} />
                                 <p className={cx('desc')}>
                                     You are using the same name on Instagram and Facebook. Go to Facebook to change your
                                     name.
@@ -116,7 +158,7 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Username</label>
                             <div className={cx('value')}>
-                                <input type="text" />
+                                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                                 <p className={cx('desc')}>
                                     In most cases, you'll be able to change your username back to lih_hatay24 for
                                     another 14 days.
@@ -132,7 +174,7 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Bio</label>
                             <div className={cx('value')}>
-                                <textarea type="text"></textarea>
+                                <textarea type="text" value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
                             </div>
                         </div>
                         <div className={cx('form-group')}>
@@ -148,13 +190,18 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Email</label>
                             <div className={cx('value')}>
-                                <input type="text" placeholder="Email" />
+                                <input
+                                    type="text"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className={cx('form-group')}>
                             <label>Gender</label>
                             <div className={cx('value')}>
-                                <input type="text" />
+                                <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} />
                             </div>
                         </div>
                         <div className={cx('form-group')}>
@@ -168,7 +215,7 @@ function Settings() {
                         </div>
                         <div className={cx('form-group')}>
                             <label></label>
-                            <Button className={cx('btn-submit')} primary>
+                            <Button type="submit" onClick={handleUpdate} className={cx('btn-submit')} primary>
                                 Submit
                             </Button>
                         </div>

@@ -24,7 +24,11 @@ function Login() {
     const navigate = useNavigate();
 
     const login = useSelector((state) => state.auth.login);
+    const register = useSelector((state) => state.auth.register);
+    const message = useSelector((state) => state.auth.message);
+
     const toast = useSelector((state) => state.toast);
+    // const auth = useSelector((state) => state.auth.auth);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -51,6 +55,9 @@ function Login() {
             {login.isLoading && <Loading />}
             {toast.status && (
                 <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
+            )}
+            {register.isSuccess && message.status && (
+                <Toast title={'Thành công!'} message={'Bạn đã đăng kí tài khoản thành công!'} />
             )}
 
             <div className={cx('container')}>

@@ -8,24 +8,34 @@ import { GoLocation } from 'react-icons/go';
 import { FiLoader, FiSmile } from 'react-icons/fi';
 import { SelectIcon } from '~/components/Icons';
 import { FaTimes } from 'react-icons/fa';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost, getPosts } from '~/redux/reducers/postSlice';
-import Loading from '../Loading';
+import { createPost, updatePost } from '~/redux/reducers/postSlice';
 import { Image as Img } from 'cloudinary-react';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import axios from 'axios';
 
 const cx = classNames.bind(styles);
 
-function Explore({ setIsModal }) {
+function Modal({ setIsModal, isEdit, data }) {
     const [content, setContent] = useState('');
     const [location, setLocation] = useState('');
     const [image, setImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const post = useSelector((state) => state.post);
+    const auth = useSelector((state) => state.auth.auth);
+    const idPost = data?._id;
+
     const dispatch = useDispatch();
-    const user = JSON.parse(localStorage.getItem('user')).user;
+
+    useEffect(() => {
+        if (isEdit) {
+            setContent(data.content);
+            setLocation(data.location);
+            setImage(data.image);
+        }
+    }, [post.update.isLoading]);
 
     const handleChange = async (e) => {
         const formData = new FormData();
@@ -43,14 +53,20 @@ function Explore({ setIsModal }) {
     };
 
     const handleCreatePost = () => {
-        const data = { content: content, location: location, image: image };
+        const author = auth.user._id;
+        const data = { content: content, location: location, image: image, author: author };
 
         if (!image && !content) {
-            alert('Vui lòng nhập bài viết!!!');
+            alert('Vui lòng nhập bài viết !!!');
             return;
         }
 
-        dispatch(createPost(data));
+        if (isEdit) {
+            dispatch(updatePost({ idPost, data }));
+        } else {
+            dispatch(createPost(data));
+        }
+
         setIsModal(false);
     };
 
@@ -93,7 +109,7 @@ function Explore({ setIsModal }) {
                     <form className={cx('post')}>
                         <div className={cx('user')}>
                             <Image className={cx('avatar')} src="111" />
-                            <span>{user.username}</span>
+                            <span>{auth.user.username}</span>
                         </div>
                         <div className={cx('text')}>
                             <textarea
@@ -133,4 +149,4 @@ function Explore({ setIsModal }) {
     );
 }
 
-export default Explore;
+export default Modal;

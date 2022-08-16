@@ -17,7 +17,6 @@ const User = new Schema(
             required: true,
             unique: true,
         },
-
         password: {
             type: 'string',
             required: true,
@@ -25,7 +24,7 @@ const User = new Schema(
         },
         avatar: {
             type: 'string',
-            default: 'C:\\Users\\linhh\\Workspace\front-end\reactJsinstagram-uiserversrcassetsimages\no-image.png',
+            default: '',
         },
         website: {
             type: 'string',
@@ -43,8 +42,9 @@ const User = new Schema(
             type: 'string',
             default: 'user',
         },
-        followers: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
-        following: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
+        posts: [{ type: mongoose.Types.ObjectId, ref: 'Post' }],
+        followers: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+        following: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
     },
     {
         timestamps: true,

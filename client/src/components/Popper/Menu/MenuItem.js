@@ -12,8 +12,8 @@ function MenuItem({ data }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handler = () => {
-        dispatch(logoutUser());
+    const handler = async () => {
+        await dispatch(logoutUser());
         navigate('/');
     };
 

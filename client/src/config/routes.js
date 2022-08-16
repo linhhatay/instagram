@@ -7,7 +7,7 @@ const routes = {
     albums: '*',
     tagged: 'tagged',
     home: '/',
-    profile: '/:nickname/*',
+    profile: '/:username/*',
 };
 
 export default routes;

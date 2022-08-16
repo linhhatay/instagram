@@ -135,8 +135,8 @@ export const HeartIcon = ({ width = 24, height = 24 }) => (
 export const HeartIconActive = () => (
     <svg
         aria-label="Activity Feed"
-        color="#262626"
-        fill="#262626"
+        color="#ed4956"
+        fill="#ed4956"
         height="24"
         role="img"
         viewBox="0 0 48 48"
