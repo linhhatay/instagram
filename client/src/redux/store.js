@@ -6,6 +6,8 @@ import authReducer from './reducers/authSlice';
 import toastReducer from './reducers/toastSlice';
 import postReducer from './reducers/postSlice';
 import userSlice from './reducers/userSlice';
+import commentReducer from './reducers/commentSlice';
+import socketReducer from './reducers/socketSlice';
 
 const persistConfig = {
     key: 'root',
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
     toast: toastReducer,
     post: postReducer,
     user: userSlice,
+    comment: commentReducer,
+    socket: socketReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -26,10 +30,26 @@ export const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-            },
+            serializableCheck: false,
         }),
 });
 
 export let persistor = persistStore(store);
+
+// import { configureStore } from '@reduxjs/toolkit';
+// import authReducer from './reducers/authSlice';
+// import toastReducer from './reducers/toastSlice';
+// import postReducer from './reducers/postSlice';
+// import userSlice from './reducers/userSlice';
+
+// import commentReducer from './reducers/commentSlice';
+
+// export default configureStore({
+//     reducer: {
+//         auth: authReducer,
+//         toast: toastReducer,
+//         post: postReducer,
+//         user: userSlice,
+//         comment: commentReducer,
+//     },
+// });

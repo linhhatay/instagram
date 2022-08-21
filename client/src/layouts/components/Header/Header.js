@@ -19,13 +19,13 @@ const cx = classNames.bind(styles);
 
 function Header() {
     const [isModal, setIsModal] = useState(false);
-    const auth = useSelector((state) => state.auth.auth);
+    const { auth } = useSelector((state) => state);
 
     const MENU_ITEMS = [
         {
             icon: <BiUserCircle />,
             title: 'Profile',
-            to: `/${auth.user.username}`,
+            to: `/${auth.auth.user.username}`,
         },
         {
             icon: <FiBookmark />,
@@ -76,7 +76,7 @@ function Header() {
                     <Button className={cx('btn')} leftIcon={<HeartIcon />}></Button>
                     <Menu items={MENU_ITEMS}>
                         <button className={cx('user')}>
-                            <Image className={cx('avatar')} src="" />
+                            <Image className={cx('avatar')} src={auth.auth.user.avatar} />
                         </button>
                     </Menu>
                 </div>

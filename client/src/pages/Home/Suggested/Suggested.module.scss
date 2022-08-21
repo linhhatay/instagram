@@ -17,6 +17,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .info {
@@ -41,6 +42,7 @@
     color: #0095f6;
     font-weight: 600;
     font-size: 12px;
+    cursor: pointer;
 }
 
 .label {
@@ -54,6 +56,7 @@
         font-weight: 500;
         line-height: 16px;
         font-family: 'Roboto';
+        cursor: pointer;
     }
 }
 

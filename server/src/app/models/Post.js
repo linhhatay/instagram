@@ -20,7 +20,7 @@ const Post = new Schema(
         author: { type: mongoose.Types.ObjectId, ref: 'User' },
     },
     {
-        timestamp: true,
+        timestamps: true,
     },
 );
 

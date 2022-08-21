@@ -1,7 +1,8 @@
 const Post = require('../models/Post');
+const User = require('../models/User');
 
 class PostController {
-    async createPost(req, res) {
+    async create(req, res) {
         try {
             const newPost = await new Post({
                 content: req.body.content,
@@ -11,6 +12,14 @@ class PostController {
             });
 
             await newPost.save();
+            await User.findOneAndUpdate(
+                { _id: req.body.author },
+                {
+                    $push: { posts: newPost },
+                },
+                { new: true },
+            );
+
             res.json({
                 msg: 'Create Post',
                 newPost,
@@ -20,15 +29,15 @@ class PostController {
         }
     }
     // GET POSTS
-    async getPosts(req, res) {
+    async get(req, res) {
         try {
             const posts = await Post.find({})
-                .sort({ createdAt: 1 })
+                .sort({ createdAt: -1 })
                 .populate('author', '_id username fullname avatar')
                 .populate({
                     path: 'comments',
                     populate: {
-                        path: 'author likes',
+                        path: 'author likes _id',
                     },
                 });
             res.status(200).json(posts);
@@ -37,7 +46,7 @@ class PostController {
         }
     }
     // UPDATE POST
-    async updatePost(req, res) {
+    async update(req, res) {
         try {
             const updatePost = req.body;
             const post = await Post.findOneAndUpdate({ _id: req.params.id }, updatePost, { new: true }).populate(
@@ -51,7 +60,7 @@ class PostController {
         }
     }
     // DELETE POST
-    async deletePost(req, res) {
+    async delete(req, res) {
         try {
             await Post.findByIdAndDelete(req.params.id);
             res.status(200).json('Delete succesfully');
@@ -60,7 +69,7 @@ class PostController {
         }
     }
     // LIKE POST
-    async likePost(req, res) {
+    async like(req, res) {
         try {
             const user = req.body.user;
             console.log(user);
@@ -77,7 +86,7 @@ class PostController {
         }
     }
     // UNLIKE POST
-    async unlikePost(req, res) {
+    async unlike(req, res) {
         try {
             const user = req.body.user;
             await Post.findOneAndUpdate(

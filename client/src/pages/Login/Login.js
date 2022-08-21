@@ -4,9 +4,8 @@ import styles from './Login.module.scss';
 
 import { AiFillFacebook } from 'react-icons/ai';
 import { FiLoader } from 'react-icons/fi';
-
 import Footer from '~/layouts/components/Footer';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import config from '~/config';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,15 +19,10 @@ const cx = classNames.bind(styles);
 function Login() {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
+
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
-    const login = useSelector((state) => state.auth.login);
-    const register = useSelector((state) => state.auth.register);
-    const message = useSelector((state) => state.auth.message);
-
-    const toast = useSelector((state) => state.toast);
-    // const auth = useSelector((state) => state.auth.auth);
+    const { auth, toast } = useSelector((state) => state);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -52,11 +46,11 @@ function Login() {
 
     return (
         <div className={cx('wrapper')}>
-            {login.isLoading && <Loading />}
+            {auth.login.isLoading && <Loading />}
             {toast.status && (
                 <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
             )}
-            {register.isSuccess && message.status && (
+            {auth.register.isSuccess && auth.message.status && (
                 <Toast title={'Thành công!'} message={'Bạn đã đăng kí tài khoản thành công!'} />
             )}
 
@@ -91,11 +85,11 @@ function Login() {
                             <div className={cx('btn')}>
                                 {username && password.length >= 6 ? (
                                     <Button type="submit" primary className={cx('login-btn')}>
-                                        {login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
+                                        {auth.login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
                                     </Button>
                                 ) : (
                                     <Button type="submit" disabled className={cx('login-btn')}>
-                                        {login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
+                                        {auth.login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
                                     </Button>
                                 )}
                             </div>
@@ -109,7 +103,8 @@ function Login() {
                             <Button leftIcon={<AiFillFacebook />}>Log in with Facebook</Button>
                         </div>
                         <span className={cx('message-error')}>
-                            {login.isError && 'Sorry, your password was incorrect. Please double-check your password.'}
+                            {auth.login.isError &&
+                                'Sorry, your password was incorrect. Please double-check your password.'}
                         </span>
 
                         <a className={cx('forgot')}>Forgot password?</a>

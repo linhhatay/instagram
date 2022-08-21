@@ -23,8 +23,7 @@ function Modal({ setIsModal, isEdit, data }) {
     const [image, setImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const post = useSelector((state) => state.post);
-    const auth = useSelector((state) => state.auth.auth);
+    const { auth, post } = useSelector((state) => state);
     const idPost = data?._id;
 
     const dispatch = useDispatch();
@@ -53,7 +52,7 @@ function Modal({ setIsModal, isEdit, data }) {
     };
 
     const handleCreatePost = () => {
-        const author = auth.user._id;
+        const author = auth.auth.user._id;
         const data = { content: content, location: location, image: image, author: author };
 
         if (!image && !content) {
@@ -109,7 +108,7 @@ function Modal({ setIsModal, isEdit, data }) {
                     <form className={cx('post')}>
                         <div className={cx('user')}>
                             <Image className={cx('avatar')} src="111" />
-                            <span>{auth.user.username}</span>
+                            <span>{auth.auth.user.username}</span>
                         </div>
                         <div className={cx('text')}>
                             <textarea

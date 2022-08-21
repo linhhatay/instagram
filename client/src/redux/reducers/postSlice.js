@@ -37,11 +37,6 @@ const postSlice = createSlice({
             isSucces: false,
             isError: false,
         },
-        comment: {
-            isLoading: false,
-            isSucces: false,
-            isError: false,
-        },
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -131,20 +126,6 @@ const postSlice = createSlice({
                 state.unlike.isError = true;
                 state.unlike.isSucces = false;
                 state.unlike.isLoading = false;
-            })
-            // CMT POST
-            .addCase(commentPost.pending, (state) => {
-                state.comment.isLoading = true;
-            })
-            .addCase(commentPost.fulfilled, (state, action) => {
-                state.comment.isSucces = true;
-                state.comment.isError = false;
-                state.comment.isLoading = false;
-            })
-            .addCase(commentPost.rejected, (state) => {
-                state.comment.isError = true;
-                state.comment.isSucces = false;
-                state.comment.isLoading = false;
             });
     },
 });
@@ -197,15 +178,6 @@ export const likePost = createAsyncThunk('post/likePost', async (state, action) 
 export const unlikePost = createAsyncThunk('post/unlikePost', async (state, action) => {
     try {
         const res = await axios.patch(`http://localhost:5000/api/v1/post/unlike/${state.idPost}`, { user: state.user });
-        return res.data;
-    } catch (error) {
-        return action.rejectWithValue(error.message);
-    }
-});
-
-export const commentPost = createAsyncThunk('comment/commentPost', async (state, action) => {
-    try {
-        const res = await axios.post('http://localhost:5000/api/v1/comment/create', state);
         return res.data;
     } catch (error) {
         return action.rejectWithValue(error.message);

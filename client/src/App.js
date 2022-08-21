@@ -8,17 +8,23 @@ import config from './config';
 import Albums from './pages/Profile/Albums';
 import Tagged from './pages/Profile/Tagged';
 
+import io from 'socket.io-client';
+import { getSocket } from './redux/reducers/socketSlice';
+
 function App() {
     const dispatch = useDispatch();
 
     const auth = useSelector((state) => state.auth.auth);
 
-    // useEffect(() => {
-    //     const firstLogin = localStorage.getItem('firstLogin');
-    //     if (firstLogin) {
-    //         dispatch(refreshToken());
-    //     }
-    // }, [dispatch]);
+    useEffect(() => {
+        // const firstLogin = localStorage.getItem('firstLogin');
+        // if (firstLogin) {
+        //     dispatch(refreshToken());
+        // }
+        const socket = io();
+        dispatch(getSocket(socket));
+        return () => socket.close();
+    }, [dispatch]);
 
     const routes = auth.token ? privateRoutes : publicRoutes;
 

@@ -47,6 +47,19 @@ const authSlice = createSlice({
         hideMessage: (state) => {
             state.message.status = false;
         },
+        editFollowing: (state, action) => {
+            if (action.payload.addFollowingOfCurrentUser) {
+                state.auth.user = {
+                    ...state.auth.user,
+                    following: [...state.auth.user.following, action.payload.newUser],
+                };
+            } else {
+                state.auth.user = {
+                    ...state.auth.user,
+                    following: [...state.auth.user.following.filter((item) => item._id !== action.payload.newUser._id)],
+                };
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -119,7 +132,6 @@ const authSlice = createSlice({
                 state.update.isLoading = true;
             })
             .addCase(updateUser.fulfilled, (state, action) => {
-                console.log(action.payload);
                 state.update.isSucces = true;
                 state.update.isLoading = false;
                 state.update.isError = false;
@@ -160,7 +172,7 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (action) => 
 
 export const refreshToken = createAsyncThunk('auth/refreshToken', async (state, action) => {
     try {
-        const res = await axios.post('http://localhost:5000/api/v1/auth/refresh_token', state);
+        const res = await axios.post('http://localhost:5000/api/v1/auth/refresh_token');
         console.log(res);
         return res.data;
     } catch (error) {
@@ -171,12 +183,11 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (state, 
 export const updateUser = createAsyncThunk('auth/updateUser', async (state, action) => {
     try {
         const res = await axios.patch(`http://localhost:5000/api/v1/users/edit`, state);
-        console.log(state);
         return res.data;
     } catch (error) {
         return action.rejectWithValue(error.message);
     }
 });
 
-export const { reset, hideMessage } = authSlice.actions;
+export const { reset, hideMessage, editFollowing } = authSlice.actions;
 export default authSlice.reducer;

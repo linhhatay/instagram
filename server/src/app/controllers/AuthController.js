@@ -18,7 +18,7 @@ const createRefreshToken = (payload) => {
 
 class AuthController {
     // REGISTER
-    async registerUser(req, res) {
+    async register(req, res) {
         try {
             const salt = await bcrypt.genSalt(10);
             const hashed = await bcrypt.hash(req.body.password, salt);
@@ -55,7 +55,7 @@ class AuthController {
     }
 
     // LOGIN
-    async loginUser(req, res) {
+    async login(req, res) {
         try {
             const { username, password } = req.body;
             const user = await User.findOne({ username }).populate('followers', '-password');
@@ -93,7 +93,7 @@ class AuthController {
     }
 
     // LOGOUT
-    async logoutUser(req, res) {
+    async logout(req, res) {
         try {
             res.clearCookie('refreshtoken', { path: '/api/v1/auth/refresh_token' });
             res.status(200).json('Logout successfully');

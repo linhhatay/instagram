@@ -7,7 +7,7 @@ import { registerUser } from '~/redux/reducers/authSlice';
 
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegTimesCircle } from 'react-icons/fa';
 import { AiFillFacebook } from 'react-icons/ai';
@@ -20,9 +20,7 @@ import { hideToast, showToast } from '~/redux/reducers/toastSlice';
 const cx = classNames.bind(styles);
 
 function Register() {
-    const register = useSelector((state) => state.auth.register);
-    const message = useSelector((state) => state.auth.message);
-    const toast = useSelector((state) => state.toast);
+    const { auth, toast } = useSelector((state) => state);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -52,10 +50,10 @@ function Register() {
     });
 
     useEffect(() => {
-        if (register.isSuccess) {
+        if (auth.register.isSuccess) {
             navigate('/');
         }
-    }, [register.isLoading]);
+    }, [auth.register.isLoading]);
 
     const handleShowToast = () => {
         dispatch(showToast());
@@ -66,11 +64,11 @@ function Register() {
 
     return (
         <div className={cx('wrapper')}>
-            {register.isLoading && <Loading />}
+            {auth.register.isLoading && <Loading />}
             {toast.status && (
                 <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
             )}
-            {register.isError && message.status && (
+            {auth.register.isError && auth.message.status && (
                 <Toast error title={'Thất bại!'} message={'Có lỗi xảy ra, vui lòng liên hệ quản trị viên!'} />
             )}
 

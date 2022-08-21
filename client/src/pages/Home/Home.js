@@ -11,9 +11,7 @@ import { getPosts } from '~/redux/reducers/postSlice';
 const cx = classNames.bind(styles);
 
 function Home() {
-    const logout = useSelector((state) => state.auth.logout);
-    const auth = useSelector((state) => state.auth.auth);
-    const post = useSelector((state) => state.post);
+    const { auth, post } = useSelector((state) => state);
 
     const dispatch = useDispatch();
 
@@ -29,7 +27,7 @@ function Home() {
 
     return (
         <div className={cx('wrapper')}>
-            {(logout.isLoading || post.create.isLoading || post.delete.isLoading || post.update.isLoading) && (
+            {(auth.logout.isLoading || post.create.isLoading || post.delete.isLoading || post.update.isLoading) && (
                 <Loading />
             )}
 

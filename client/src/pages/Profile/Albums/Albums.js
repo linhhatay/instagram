@@ -1,4 +1,5 @@
 import classNames from 'classnames/bind';
+import { useSelector } from 'react-redux';
 import Image from '~/components/Image';
 import styles from './Albums.module.scss';
 

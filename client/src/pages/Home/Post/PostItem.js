@@ -6,11 +6,13 @@ import { CommentIcon, HeartIcon, HeartIconActive, InboxIcon, SaveIcon } from '~/
 import Image from '~/components/Image';
 import styles from './Post.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePost, likePost, unlikePost, commentPost } from '~/redux/reducers/postSlice';
+import { deletePost, likePost, unlikePost } from '~/redux/reducers/postSlice';
 
 import Tippy from '@tippyjs/react/headless';
 import { useEffect, useState } from 'react';
 import Modal from '~/components/Modal';
+import Comments, { CommentItem } from '~/components/Comments';
+import { createComment } from '~/redux/reducers/commentSlice';
 
 const cx = classNames.bind(styles);
 
@@ -18,9 +20,11 @@ function PostItem({ data }) {
     const [isModal, setIsModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [isLike, setIsLike] = useState(false);
+    const [loadMore, setLoadMore] = useState(4);
+    const [isMore, setIsMore] = useState(true);
     const [comment, setComment] = useState('');
 
-    const auth = useSelector((state) => state.auth.auth);
+    const { auth } = useSelector((state) => state);
 
     const dispatch = useDispatch();
 
@@ -29,7 +33,7 @@ function PostItem({ data }) {
     };
 
     const handleEditPost = (data) => {
-        if (auth.user._id === data.author._id) {
+        if (auth.auth.user._id === data.author._id) {
             setIsEdit(true);
             setIsModal(true);
         } else {
@@ -38,7 +42,7 @@ function PostItem({ data }) {
     };
 
     const handleLikePost = () => {
-        const state = { idPost: data._id, user: auth.user._id };
+        const state = { idPost: data._id, user: auth.auth.user._id };
         if (isLike) {
             setIsLike(false);
             dispatch(unlikePost(state));
@@ -50,16 +54,20 @@ function PostItem({ data }) {
 
     const handleComment = (e) => {
         e.preventDefault();
+        if (!comment.trim()) {
+            return;
+        }
         const state = {
             postId: data._id,
             content: comment,
-            author: auth.user._id,
+            author: auth.auth.user._id,
         };
-        dispatch(commentPost(state));
+        dispatch(createComment(state));
+        setComment('');
     };
 
     useEffect(() => {
-        if (data.likes.find((like) => like === auth.user._id)) {
+        if (data.likes.find((like) => like === auth.auth.user._id)) {
             setIsLike(true);
         }
     }, [data.likes]);
@@ -124,18 +132,22 @@ function PostItem({ data }) {
                             <span className={cx('text')}>{data.content}</span>
                         </div>
                     )}
-                    <button className={cx('load-more')}>
-                        View All <span>22,413 </span> comments
-                    </button>
-                    <div className={cx('user-comment')}>
-                        <div className={cx('box')}>
-                            <span className={cx('author')}>lih_hatay24</span>&nbsp;{' '}
-                            <span className={cx('text')}>Good news!</span>
-                        </div>
-                        <button className={cx('loves')}>
-                            <HeartIcon height={12} width={12} />
+                    {data.comments.length > 4 && isMore && (
+                        <button
+                            className={cx('load-more')}
+                            onClick={() => {
+                                setLoadMore(data.comments.length);
+                                setIsMore(false);
+                            }}
+                        >
+                            View All <span>{data.comments.length - 4} </span> comments
                         </button>
-                    </div>
+                    )}
+                    <Comments>
+                        {data.comments.slice(0, loadMore).map((comment) => (
+                            <CommentItem postId={data._id} data={comment} key={comment._id} />
+                        ))}
+                    </Comments>
                     <div className={cx('times')}>1 HOURS AGO</div>
                 </div>
                 <div className={cx('comment')}>
@@ -145,6 +157,7 @@ function PostItem({ data }) {
                         </button>
                         <textarea
                             value={comment}
+                            spellCheck={false}
                             onChange={(e) => setComment(e.target.value)}
                             placeholder="Add a comment..."
                         ></textarea>

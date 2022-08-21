@@ -96,6 +96,17 @@
     }
 }
 
+.btn-follow {
+    margin-left: 20px;
+    padding: 6px 26px;
+    font-weight: 500;
+    font-family: 'Roboto';
+
+    @media screen and (max-width: 576px) {
+        margin-left: 0;
+    }
+}
+
 .add {
     display: flex;
     cursor: pointer;
@@ -103,10 +114,6 @@
     padding: 7px 24px;
     border-radius: 4px;
     border: 1px solid rgba(219, 219, 219);
-
-    // @media screen and (max-width: 576px) {
-    //     margin-left: 0;
-    // }
 }
 
 .options {

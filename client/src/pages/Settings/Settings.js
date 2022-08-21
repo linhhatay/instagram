@@ -7,7 +7,6 @@ import Footer from '~/layouts/components/Footer';
 import { updateUser } from '~/redux/reducers/authSlice';
 import styles from './Settings.module.scss';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import Loading from '~/components/Loading';
 
 const cx = classNames.bind(styles);
@@ -20,15 +19,12 @@ function Settings() {
     const [gender, setGender] = useState('');
     const [email, setEmail] = useState('');
 
-    const navigate = useNavigate();
-
     const dispatch = useDispatch();
-    const auth = useSelector((state) => state.auth.auth);
-    const update = useSelector((state) => state.auth.update);
+    const { auth } = useSelector((state) => state);
 
     const handleUpdate = (e) => {
         e.preventDefault();
-        const data = { id: auth.user._id, avatar, fullname, username, bio, gender, email };
+        const data = { id: auth.auth.user._id, avatar, fullname, username, bio, gender, email };
         dispatch(updateUser(data));
     };
 
@@ -48,7 +44,7 @@ function Settings() {
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
-                {update.isLoading && <Loading />}
+                {auth.update.isLoading && <Loading />}
                 <ul className={cx('sidebar')}>
                     <li className={cx('active')}>Edit profile</li>
                     <li>Change password</li>
@@ -135,9 +131,9 @@ function Settings() {
                 </ul>
                 <div className={cx('content')}>
                     <div className={cx('header')}>
-                        <Image className={cx('avatar')} src={auth.user.avatar} />
+                        <Image className={cx('avatar')} src={auth.auth.user.avatar} />
                         <div>
-                            <h1>{auth.user.username}</h1>
+                            <h1>{auth.auth.user.username}</h1>
                             <button className={cx('choose-avatar')}>
                                 <input type="file" accept=".jpg, .png" onChange={handleGetAvatar} />
                                 Change profile photo

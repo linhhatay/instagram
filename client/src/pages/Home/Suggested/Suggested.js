@@ -1,21 +1,27 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Image from '~/components/Image';
+import { getAllUser } from '~/redux/reducers/userSlice';
 import styles from './Suggested.module.scss';
 
 const cx = classNames.bind(styles);
 
 function Suggested() {
-    const auth = useSelector((state) => state.auth.auth);
+    const { auth, user } = useSelector((state) => state);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getAllUser());
+    }, []);
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('account')}>
-                <Image className={cx('avatar')} src="123" />
+                <Image className={cx('avatar')} src={auth.auth.user.avatar} />
                 <div className={cx('info')}>
-                    <div className={cx('user-name')}>{auth.user.username}</div>
-                    <h4 className={cx('name')}>{auth.user.fullname}</h4>
+                    <div className={cx('user-name')}>{auth.auth.user.username}</div>
+                    <h4 className={cx('name')}>{auth.auth.user.fullname}</h4>
                 </div>
                 <button className={cx('switch')}>Switch</button>
             </div>
@@ -24,16 +30,16 @@ function Suggested() {
                     <h4 className={cx('title')}>Suggestions For You</h4>
                     <button>See All</button>
                 </div>
-                {/* {suggestions.map((item) => (
-                    <div className={cx('item')} key={item.id}>
+                {user.getAll.data.map((item) => (
+                    <div className={cx('item')} key={item._id}>
                         <Image className={cx('avatar')} src={item.avatar} />
                         <div className={cx('info')}>
-                            <div className={cx('user-name')}>{item.nickname}</div>
-                            <h4 className={cx('name')}>{item.full_name || 'Suggested for you'} </h4>
+                            <div className={cx('user-name')}>{item.username}</div>
+                            <h4 className={cx('name')}>{item.fullname || 'Suggested for you'} </h4>
                         </div>
                         <button className={cx('switch')}>Follow</button>
                     </div>
-                ))} */}
+                ))}
             </div>
             <footer className={cx('footer')}>
                 <nav className={cx('link')}>
