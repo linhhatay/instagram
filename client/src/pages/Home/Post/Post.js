@@ -7,7 +7,7 @@ const cx = classNames.bind(styles);
 function Post({ posts }) {
     return (
         <div className={cx('wrapper')}>
-            {posts?.map((item) => (
+            {posts.map((item) => (
                 <PostItem key={item._id} data={item} />
             ))}
         </div>

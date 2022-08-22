@@ -51,7 +51,7 @@ class PostController {
             const updatePost = req.body;
             const post = await Post.findOneAndUpdate({ _id: req.params.id }, updatePost, { new: true }).populate(
                 'author',
-                '_id username fullname',
+                '_id username fullname avatar',
             );
 
             res.status(200).json(post);

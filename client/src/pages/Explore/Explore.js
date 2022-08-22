@@ -7,13 +7,13 @@ import styles from './Explore.module.scss';
 const cx = classNames.bind(styles);
 
 function Explore() {
-    const { post } = useSelector((state) => state);
+    const { posts } = useSelector((state) => state);
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
                 <div className={cx('top')}>
-                    {post.posts.data.map((item) => (
+                    {posts.data.map((item) => (
                         <div className={cx('image')} key={item._id}>
                             <Image className={cx('link')} src={item.image} />
                         </div>

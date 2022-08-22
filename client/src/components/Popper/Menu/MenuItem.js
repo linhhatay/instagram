@@ -1,20 +1,17 @@
 import classNames from 'classnames/bind';
+import { useDispatch } from 'react-redux';
+
 import styles from './Menu.module.scss';
 import Button from '~/components/Button';
-
-import { logoutUser } from '~/redux/reducers/authSlice';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { logout } from '~/redux/auth/authActions';
 
 const cx = classNames.bind(styles);
 
 function MenuItem({ data }) {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
-    const handler = async () => {
-        await dispatch(logoutUser());
-        navigate('/');
+    const handler = () => {
+        dispatch(logout());
     };
 
     return (

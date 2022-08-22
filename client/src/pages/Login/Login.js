@@ -1,18 +1,15 @@
 import classNames from 'classnames/bind';
-import Button from '~/components/Button';
-import styles from './Login.module.scss';
-
 import { AiFillFacebook } from 'react-icons/ai';
 import { FiLoader } from 'react-icons/fi';
-import Footer from '~/layouts/components/Footer';
 import { Link } from 'react-router-dom';
-import config from '~/config';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, reset } from '~/redux/reducers/authSlice';
-import Loading from '~/components/Loading';
-import { hideToast, showToast } from '~/redux/reducers/toastSlice';
-import Toast from '~/components/Toast';
+
+import styles from './Login.module.scss';
+import Button from '~/components/Button';
+import Footer from '~/layouts/components/Footer';
+import config from '~/config';
+import { login } from '~/redux/auth/authActions';
 
 const cx = classNames.bind(styles);
 
@@ -22,7 +19,7 @@ function Login() {
 
     const dispatch = useDispatch();
 
-    const { auth, toast } = useSelector((state) => state);
+    const { notify } = useSelector((state) => state);
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -30,30 +27,11 @@ function Login() {
             username: username,
             password: password,
         };
-        dispatch(loginUser(user));
-    };
-
-    const handleShowToast = () => {
-        dispatch(showToast());
-        setTimeout(() => {
-            dispatch(hideToast());
-        }, 2000);
-    };
-
-    const handleResetData = () => {
-        dispatch(reset());
+        dispatch(login(user));
     };
 
     return (
         <div className={cx('wrapper')}>
-            {auth.login.isLoading && <Loading />}
-            {toast.status && (
-                <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
-            )}
-            {auth.register.isSuccess && auth.message.status && (
-                <Toast title={'Thành công!'} message={'Bạn đã đăng kí tài khoản thành công!'} />
-            )}
-
             <div className={cx('container')}>
                 <div className={cx('banner')}>
                     <img src="https://www.instagram.com/static/images/homepage/phones/home-phones.png/1dc085cdb87d.png" />
@@ -85,11 +63,11 @@ function Login() {
                             <div className={cx('btn')}>
                                 {username && password.length >= 6 ? (
                                     <Button type="submit" primary className={cx('login-btn')}>
-                                        {auth.login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
+                                        {notify.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
                                     </Button>
                                 ) : (
                                     <Button type="submit" disabled className={cx('login-btn')}>
-                                        {auth.login.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
+                                        {notify.isLoading ? <FiLoader className={cx('loading')} /> : 'Log in'}
                                     </Button>
                                 )}
                             </div>
@@ -99,22 +77,18 @@ function Login() {
                             <span>OR</span>
                             <div></div>
                         </div>
-                        <div className={cx('social')} onClick={handleShowToast}>
+                        <div className={cx('social')}>
                             <Button leftIcon={<AiFillFacebook />}>Log in with Facebook</Button>
                         </div>
                         <span className={cx('message-error')}>
-                            {auth.login.isError &&
-                                'Sorry, your password was incorrect. Please double-check your password.'}
+                            {notify.isError && 'Sorry, your password was incorrect. Please double-check your password.'}
                         </span>
 
                         <a className={cx('forgot')}>Forgot password?</a>
                     </div>
                     <div className={cx('center')}>
                         <div className={cx('register')}>
-                            Don't have an account?{' '}
-                            <Link to={config.routes.register} onClick={handleResetData}>
-                                Sign up
-                            </Link>
+                            Don't have an account? <Link to={config.routes.register}>Sign up</Link>
                         </div>
                     </div>
                     <div className={cx('bottom')}>

@@ -2,23 +2,21 @@ import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
 import Button from '~/components/Button';
 import Image from '~/components/Image';
 import config from '~/config';
 import Footer from '~/layouts/components/Footer';
 import styles from './Profile.module.scss';
-
-import Toast from '~/components/Toast';
-import { hideToast, showToast } from '~/redux/reducers/toastSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { getProfileUser } from '~/redux/reducers/userSlice';
 import FollowButton from './FollowButton';
+import { getProfileUsers } from '~/redux/profile/profileActions';
 
 const cx = classNames.bind(styles);
 
 function Profile() {
-    const { auth, user, toast } = useSelector((state) => state);
+    const { auth, profile } = useSelector((state) => state);
 
     const { username } = useParams();
 
@@ -27,33 +25,20 @@ function Profile() {
 
     const dispatch = useDispatch();
 
-    const handleShowToast = () => {
-        dispatch(showToast());
-        setTimeout(() => {
-            dispatch(hideToast());
-        }, 2000);
-    };
-
     useEffect(() => {
-        if (username === auth.auth.user.username) {
-            setUserData([auth.auth.user]);
+        if (username === auth.user.username) {
+            setUserData([auth.user]);
         } else {
-            dispatch(getProfileUser(username));
-            const newData = user.anUser.users.filter((user) => user.username === username);
+            dispatch(getProfileUsers({ users: profile.users, username, auth }));
+            const newData = profile.users.filter((user) => user.username === username);
             setUserData(newData);
         }
-    }, [username, auth, dispatch, user.anUser.user]);
+    }, [username, auth, dispatch, profile.users]);
 
     return (
         <div className={cx('wrapper')}>
             {userData.map((item, index) => (
                 <div className={cx('container')} key={index}>
-                    {toast.status && (
-                        <Toast
-                            title={'Thông báo!'}
-                            message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'}
-                        />
-                    )}
                     <header className={cx('header')}>
                         <div className={cx('avatar')}>
                             <Image src={item.avatar} alt="avatar" />
@@ -61,7 +46,7 @@ function Profile() {
                         <div className={cx('info')}>
                             <div className={cx('actions')}>
                                 <h2 className={cx('username')}>{item.username}</h2>
-                                {item._id === auth.auth.user._id ? (
+                                {item._id === auth.user._id ? (
                                     <Button to={config.routes.settings} className={cx('edit')} outline>
                                         Edit profile
                                     </Button>
@@ -87,8 +72,8 @@ function Profile() {
                                         
                                     </>
                                 )} */}
-                                {item._id === auth.auth.user._id ? (
-                                    <button className={cx('setting')} onClick={handleShowToast}>
+                                {item._id === auth.user._id ? (
+                                    <button className={cx('setting')}>
                                         <svg
                                             aria-label="Options"
                                             color="#262626"
@@ -118,7 +103,7 @@ function Profile() {
                                         </svg>
                                     </button>
                                 ) : (
-                                    <button className={cx('options')} onClick={handleShowToast}>
+                                    <button className={cx('options')}>
                                         <BiDotsHorizontalRounded />
                                     </button>
                                 )}

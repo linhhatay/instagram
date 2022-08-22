@@ -1,13 +1,15 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { configureStore } from '@reduxjs/toolkit';
 
-import authReducer from './reducers/authSlice';
-import toastReducer from './reducers/toastSlice';
-import postReducer from './reducers/postSlice';
-import userSlice from './reducers/userSlice';
-import commentReducer from './reducers/commentSlice';
-import socketReducer from './reducers/socketSlice';
+import auth from './auth/authReducers';
+import notify from './notify/notifyReducers';
+import profile from './profile/profileReducers';
+import posts from './post/postReducers';
+import socket from './socket/socketReducers';
 
 const persistConfig = {
     key: 'root',
@@ -16,14 +18,12 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-    auth: authReducer,
-    toast: toastReducer,
-    post: postReducer,
-    user: userSlice,
-    comment: commentReducer,
-    socket: socketReducer,
+    auth,
+    notify,
+    profile,
+    posts,
+    socket,
 });
-
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
@@ -36,20 +36,4 @@ export const store = configureStore({
 
 export let persistor = persistStore(store);
 
-// import { configureStore } from '@reduxjs/toolkit';
-// import authReducer from './reducers/authSlice';
-// import toastReducer from './reducers/toastSlice';
-// import postReducer from './reducers/postSlice';
-// import userSlice from './reducers/userSlice';
-
-// import commentReducer from './reducers/commentSlice';
-
-// export default configureStore({
-//     reducer: {
-//         auth: authReducer,
-//         toast: toastReducer,
-//         post: postReducer,
-//         user: userSlice,
-//         comment: commentReducer,
-//     },
-// });
+// export const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));

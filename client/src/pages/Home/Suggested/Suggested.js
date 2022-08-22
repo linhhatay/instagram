@@ -1,27 +1,34 @@
+import axios from 'axios';
 import classNames from 'classnames/bind';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import Image from '~/components/Image';
-import { getAllUser } from '~/redux/reducers/userSlice';
 import styles from './Suggested.module.scss';
 
 const cx = classNames.bind(styles);
 
 function Suggested() {
-    const { auth, user } = useSelector((state) => state);
-    const dispatch = useDispatch();
+    const { auth } = useSelector((state) => state);
+    const [suggestions, setSuggestions] = useState([]);
 
     useEffect(() => {
-        dispatch(getAllUser());
+        async function getSuggestedAccount() {
+            const res = await axios.get('http://localhost:5000/api/v1/users');
+            const data = res.data.filter((item) => item._id !== auth.user._id);
+            setSuggestions(data);
+        }
+        getSuggestedAccount();
     }, []);
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('account')}>
-                <Image className={cx('avatar')} src={auth.auth.user.avatar} />
+                <Image className={cx('avatar')} src={auth.user.avatar} />
                 <div className={cx('info')}>
-                    <div className={cx('user-name')}>{auth.auth.user.username}</div>
-                    <h4 className={cx('name')}>{auth.auth.user.fullname}</h4>
+                    <div className={cx('user-name')}>{auth.user.username}</div>
+                    <h4 className={cx('name')}>{auth.user.fullname}</h4>
                 </div>
                 <button className={cx('switch')}>Switch</button>
             </div>
@@ -30,15 +37,14 @@ function Suggested() {
                     <h4 className={cx('title')}>Suggestions For You</h4>
                     <button>See All</button>
                 </div>
-                {user.getAll.data.map((item) => (
-                    <div className={cx('item')} key={item._id}>
+                {suggestions.map((item) => (
+                    <Link to={`/${item.username}`} className={cx('item')} key={item._id}>
                         <Image className={cx('avatar')} src={item.avatar} />
                         <div className={cx('info')}>
                             <div className={cx('user-name')}>{item.username}</div>
                             <h4 className={cx('name')}>{item.fullname || 'Suggested for you'} </h4>
                         </div>
-                        <button className={cx('switch')}>Follow</button>
-                    </div>
+                    </Link>
                 ))}
             </div>
             <footer className={cx('footer')}>

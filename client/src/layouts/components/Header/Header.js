@@ -4,16 +4,17 @@ import { FiBookmark } from 'react-icons/fi';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { MdOutlineChangeCircle } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import Button from '~/components/Button';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import { ExploreIcon, HeartIcon, HomeIcon, InboxIcon, PostIcon } from '~/components/Icons';
+import Button from '~/components/Button';
 import Image from '~/components/Image';
 import Menu from '~/components/Popper/Menu';
 import Search from '../Search';
-import styles from './Header.module.scss';
 import config from '~/config';
-import { useState } from 'react';
 import Modal from '~/components/Modal';
-import { useSelector } from 'react-redux';
+import styles from './Header.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -25,7 +26,7 @@ function Header() {
         {
             icon: <BiUserCircle />,
             title: 'Profile',
-            to: `/${auth.auth.user.username}`,
+            to: `/${auth.user.username}`,
         },
         {
             icon: <FiBookmark />,
@@ -76,7 +77,7 @@ function Header() {
                     <Button className={cx('btn')} leftIcon={<HeartIcon />}></Button>
                     <Menu items={MENU_ITEMS}>
                         <button className={cx('user')}>
-                            <Image className={cx('avatar')} src={auth.auth.user.avatar} />
+                            <Image className={cx('avatar')} src={auth.user.avatar} />
                         </button>
                     </Menu>
                 </div>

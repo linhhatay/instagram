@@ -16,7 +16,7 @@ class CommentController {
                     $push: { comments: newComment._id },
                 },
                 { new: true },
-            );
+            ).populate('author');
 
             await newComment.save();
 

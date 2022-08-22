@@ -75,6 +75,7 @@ class AuthController {
 
                 res.cookie('refreshtoken', refresh_token, {
                     httpOnly: true,
+                    secure: false,
                     path: '/api/v1/auth/refresh_token',
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                 });

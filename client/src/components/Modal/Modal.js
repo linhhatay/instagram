@@ -10,10 +10,10 @@ import { SelectIcon } from '~/components/Icons';
 import { FaTimes } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost, updatePost } from '~/redux/reducers/postSlice';
 import { Image as Img } from 'cloudinary-react';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import axios from 'axios';
+import { createPost, updatePost } from '~/redux/post/postActions';
 
 const cx = classNames.bind(styles);
 
@@ -23,7 +23,7 @@ function Modal({ setIsModal, isEdit, data }) {
     const [image, setImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const { auth, post } = useSelector((state) => state);
+    const { auth } = useSelector((state) => state);
     const idPost = data?._id;
 
     const dispatch = useDispatch();
@@ -34,7 +34,7 @@ function Modal({ setIsModal, isEdit, data }) {
             setLocation(data.location);
             setImage(data.image);
         }
-    }, [post.update.isLoading]);
+    }, []);
 
     const handleChange = async (e) => {
         const formData = new FormData();
@@ -52,7 +52,7 @@ function Modal({ setIsModal, isEdit, data }) {
     };
 
     const handleCreatePost = () => {
-        const author = auth.auth.user._id;
+        const author = auth.user._id;
         const data = { content: content, location: location, image: image, author: author };
 
         if (!image && !content) {
@@ -63,7 +63,7 @@ function Modal({ setIsModal, isEdit, data }) {
         if (isEdit) {
             dispatch(updatePost({ idPost, data }));
         } else {
-            dispatch(createPost(data));
+            dispatch(createPost({ data, auth }));
         }
 
         setIsModal(false);
@@ -107,8 +107,8 @@ function Modal({ setIsModal, isEdit, data }) {
                     </div>
                     <form className={cx('post')}>
                         <div className={cx('user')}>
-                            <Image className={cx('avatar')} src="111" />
-                            <span>{auth.auth.user.username}</span>
+                            <Image className={cx('avatar')} src={auth.user.avatar} />
+                            <span>{auth.user.username}</span>
                         </div>
                         <div className={cx('text')}>
                             <textarea

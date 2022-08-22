@@ -1,35 +1,33 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes, privateRoutes } from '~/routes';
 import { useDispatch, useSelector } from 'react-redux';
 import { Fragment, useEffect } from 'react';
-import { refreshToken } from './redux/reducers/authSlice';
+import io from 'socket.io-client';
+
+import { publicRoutes, privateRoutes } from '~/routes';
+import { refreshToken } from './redux/auth/authActions';
 import DefaultLayout from '~/layouts';
 import config from './config';
 import Albums from './pages/Profile/Albums';
 import Tagged from './pages/Profile/Tagged';
-
-import io from 'socket.io-client';
-import { getSocket } from './redux/reducers/socketSlice';
+import Notify from './components/Notify';
+import { SOCKET_TYPES } from './redux/socket/socketConstanst';
 
 function App() {
     const dispatch = useDispatch();
-
-    const auth = useSelector((state) => state.auth.auth);
+    const { auth } = useSelector((state) => state);
 
     useEffect(() => {
-        // const firstLogin = localStorage.getItem('firstLogin');
-        // if (firstLogin) {
-        //     dispatch(refreshToken());
-        // }
         const socket = io();
-        dispatch(getSocket(socket));
+        dispatch({ type: SOCKET_TYPES.SOCKET, payload: socket });
         return () => socket.close();
+        // dispatch(refreshToken());
     }, [dispatch]);
 
     const routes = auth.token ? privateRoutes : publicRoutes;
 
     return (
         <Router>
+            <Notify />
             <div className="App">
                 <Routes>
                     {routes.map((route, index) => {

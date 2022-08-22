@@ -1,13 +1,14 @@
+import axios from 'axios';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import Button from '~/components/Button';
 import Image from '~/components/Image';
-import Footer from '~/layouts/components/Footer';
-import { updateUser } from '~/redux/reducers/authSlice';
 import styles from './Settings.module.scss';
-import axios from 'axios';
-import Loading from '~/components/Loading';
+import Loading from '~/components/Notify/Loading';
+import Footer from '~/layouts/components/Footer';
+import { updateProfileUser } from '~/redux/profile/profileActions';
 
 const cx = classNames.bind(styles);
 
@@ -22,10 +23,10 @@ function Settings() {
     const dispatch = useDispatch();
     const { auth } = useSelector((state) => state);
 
-    const handleUpdate = (e) => {
+    const handleUpdateProfile = (e) => {
         e.preventDefault();
-        const data = { id: auth.auth.user._id, avatar, fullname, username, bio, gender, email };
-        dispatch(updateUser(data));
+        const data = { id: auth.user._id, avatar, fullname, username, bio, gender, email };
+        dispatch(updateProfileUser({ data, auth }));
     };
 
     const handleGetAvatar = async (e) => {
@@ -41,10 +42,18 @@ function Settings() {
         }
     };
 
+    useEffect(() => {
+        setAvatar(auth.user.avatar);
+        setFullname(auth.user.fullname);
+        setUsername(auth.user.username);
+        setBio(auth.user.bio);
+        setGender(auth.user.gender);
+        setEmail(auth.user.email);
+    }, [auth.user]);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
-                {auth.update.isLoading && <Loading />}
                 <ul className={cx('sidebar')}>
                     <li className={cx('active')}>Edit profile</li>
                     <li>Change password</li>
@@ -131,11 +140,11 @@ function Settings() {
                 </ul>
                 <div className={cx('content')}>
                     <div className={cx('header')}>
-                        <Image className={cx('avatar')} src={auth.auth.user.avatar} />
+                        <Image className={cx('avatar')} src={auth.user.avatar} />
                         <div>
-                            <h1>{auth.auth.user.username}</h1>
+                            <h1>{auth.user.username}</h1>
                             <button className={cx('choose-avatar')}>
-                                <input type="file" accept=".jpg, .png" onChange={handleGetAvatar} />
+                                <input spellCheck={false} type="file" accept=".jpg, .png" onChange={handleGetAvatar} />
                                 Change profile photo
                             </button>
                         </div>
@@ -144,7 +153,12 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Name</label>
                             <div className={cx('value')}>
-                                <input type="text" value={fullname} onChange={(e) => setFullname(e.target.value)} />
+                                <input
+                                    spellCheck={false}
+                                    type="text"
+                                    value={fullname}
+                                    onChange={(e) => setFullname(e.target.value)}
+                                />
                                 <p className={cx('desc')}>
                                     You are using the same name on Instagram and Facebook. Go to Facebook to change your
                                     name.
@@ -154,7 +168,12 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Username</label>
                             <div className={cx('value')}>
-                                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                                <input
+                                    spellCheck={false}
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
                                 <p className={cx('desc')}>
                                     In most cases, you'll be able to change your username back to lih_hatay24 for
                                     another 14 days.
@@ -164,13 +183,18 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Website</label>
                             <div className={cx('value')}>
-                                <input type="text" placeholder="Website" />
+                                <input spellCheck={false} type="text" placeholder="Website" />
                             </div>
                         </div>
                         <div className={cx('form-group')}>
                             <label>Bio</label>
                             <div className={cx('value')}>
-                                <textarea type="text" value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
+                                <textarea
+                                    type="text"
+                                    spellCheck={false}
+                                    value={bio}
+                                    onChange={(e) => setBio(e.target.value)}
+                                ></textarea>
                             </div>
                         </div>
                         <div className={cx('form-group')}>
@@ -197,13 +221,18 @@ function Settings() {
                         <div className={cx('form-group')}>
                             <label>Gender</label>
                             <div className={cx('value')}>
-                                <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} />
+                                <input
+                                    spellCheck={false}
+                                    type="text"
+                                    value={gender}
+                                    onChange={(e) => setGender(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className={cx('form-group')}>
                             <label>Similar account suggestions</label>
                             <div className={cx('suggestions')}>
-                                <input className={cx('checked')} type="checkbox" />
+                                <input spellCheck={false} className={cx('checked')} type="checkbox" />
                                 <p>
                                     Include your account when recommending similar accounts people might want to follow.
                                 </p>
@@ -211,7 +240,7 @@ function Settings() {
                         </div>
                         <div className={cx('form-group')}>
                             <label></label>
-                            <Button type="submit" onClick={handleUpdate} className={cx('btn-submit')} primary>
+                            <Button type="submit" onClick={handleUpdateProfile} className={cx('btn-submit')} primary>
                                 Submit
                             </Button>
                         </div>

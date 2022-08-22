@@ -2,17 +2,17 @@ import classNames from 'classnames/bind';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { FiSmile } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { CommentIcon, HeartIcon, HeartIconActive, InboxIcon, SaveIcon } from '~/components/Icons';
-import Image from '~/components/Image';
-import styles from './Post.module.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { deletePost, likePost, unlikePost } from '~/redux/reducers/postSlice';
-
 import Tippy from '@tippyjs/react/headless';
 import { useEffect, useState } from 'react';
+
+import Image from '~/components/Image';
+import styles from './Post.module.scss';
+import { CommentIcon, HeartIcon, HeartIconActive, InboxIcon, SaveIcon } from '~/components/Icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { deletePost, likePost, unlikePost } from '~/redux/post/postActions';
 import Modal from '~/components/Modal';
 import Comments, { CommentItem } from '~/components/Comments';
-import { createComment } from '~/redux/reducers/commentSlice';
+import { createComment } from '~/redux/comments/commentActions';
 
 const cx = classNames.bind(styles);
 
@@ -33,7 +33,7 @@ function PostItem({ data }) {
     };
 
     const handleEditPost = (data) => {
-        if (auth.auth.user._id === data.author._id) {
+        if (auth.user._id === data.author._id) {
             setIsEdit(true);
             setIsModal(true);
         } else {
@@ -42,7 +42,7 @@ function PostItem({ data }) {
     };
 
     const handleLikePost = () => {
-        const state = { idPost: data._id, user: auth.auth.user._id };
+        const state = { post: data, user: auth.user._id };
         if (isLike) {
             setIsLike(false);
             dispatch(unlikePost(state));
@@ -60,14 +60,14 @@ function PostItem({ data }) {
         const state = {
             postId: data._id,
             content: comment,
-            author: auth.auth.user._id,
+            author: auth.user._id,
         };
-        dispatch(createComment(state));
+        dispatch(createComment({ post: data, comment: state, auth }));
         setComment('');
     };
 
     useEffect(() => {
-        if (data.likes.find((like) => like === auth.auth.user._id)) {
+        if (data.likes.find((like) => like === auth.user._id)) {
             setIsLike(true);
         }
     }, [data.likes]);
@@ -81,7 +81,7 @@ function PostItem({ data }) {
                     <Image className={cx('avatar')} src={data.author.avatar} />
                     <div className={cx('desc')}>
                         <Link to="" className={cx('user-name')}>
-                            {data.author?.username}
+                            {data.author.username}
                         </Link>
                         <div className={cx('location')}>{data.location}</div>
                     </div>
@@ -145,7 +145,7 @@ function PostItem({ data }) {
                     )}
                     <Comments>
                         {data.comments.slice(0, loadMore).map((comment) => (
-                            <CommentItem postId={data._id} data={comment} key={comment._id} />
+                            <CommentItem post={data} data={comment} key={comment._id} />
                         ))}
                     </Comments>
                     <div className={cx('times')}>1 HOURS AGO</div>

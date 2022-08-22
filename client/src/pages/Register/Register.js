@@ -1,29 +1,24 @@
 import classNames from 'classnames/bind';
-import styles from './Register.module.scss';
-import Button from '~/components/Button';
-import config from '~/config';
-import Footer from '~/layouts/components/Footer';
-import { registerUser } from '~/redux/reducers/authSlice';
-
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaRegTimesCircle } from 'react-icons/fa';
 import { AiFillFacebook } from 'react-icons/ai';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Loading from '~/components/Loading';
-import Toast from '~/components/Toast';
-import { hideToast, showToast } from '~/redux/reducers/toastSlice';
+
+import styles from './Register.module.scss';
+import Button from '~/components/Button';
+import Footer from '~/layouts/components/Footer';
+import config from '~/config';
+import { register } from '~/redux/auth/authActions';
 
 const cx = classNames.bind(styles);
 
 function Register() {
-    const { auth, toast } = useSelector((state) => state);
+    const { notify } = useSelector((state) => state);
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const { errors, values, touched, handleBlur, handleChange, handleSubmit } = useFormik({
         initialValues: {
@@ -41,7 +36,7 @@ function Register() {
             password: Yup.string().required().min(6),
         }),
         onSubmit: async (values) => {
-            await dispatch(registerUser(values));
+            await dispatch(register(values));
             values.email = '';
             values.fullname = '';
             values.username = '';
@@ -50,28 +45,13 @@ function Register() {
     });
 
     useEffect(() => {
-        if (auth.register.isSuccess) {
-            navigate('/');
+        if (notify.isSucces) {
+            dispatch({ type: 'NOTIFY', payload: { isSucces: true } });
         }
-    }, [auth.register.isLoading]);
-
-    const handleShowToast = () => {
-        dispatch(showToast());
-        setTimeout(() => {
-            dispatch(hideToast());
-        }, 2000);
-    };
+    }, [notify.isSucces]);
 
     return (
         <div className={cx('wrapper')}>
-            {auth.register.isLoading && <Loading />}
-            {toast.status && (
-                <Toast title={'Thông báo!'} message={'Tính năng chưa được cập nhật, mong bạn vui lòng thử lại sau!'} />
-            )}
-            {auth.register.isError && auth.message.status && (
-                <Toast error title={'Thất bại!'} message={'Có lỗi xảy ra, vui lòng liên hệ quản trị viên!'} />
-            )}
-
             <div className={cx('container')}>
                 <div className={cx('top')}>
                     <img
@@ -79,7 +59,7 @@ function Register() {
                         src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a252de00b20.png"
                     />
                     <h2 className={cx('label')}>Sign up to see photos and videos from your friends.</h2>
-                    <div className={cx('btn')} onClick={handleShowToast}>
+                    <div className={cx('btn')}>
                         <Button primary leftIcon={<AiFillFacebook />}>
                             Log in with Facebook
                         </Button>

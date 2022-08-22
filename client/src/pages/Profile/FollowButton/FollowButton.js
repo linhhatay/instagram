@@ -4,33 +4,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/components/Button';
 import classNames from 'classnames/bind';
 import styles from '../Profile.module.scss';
-import { editFollower, followUser, unfollowUser } from '~/redux/reducers/userSlice';
-import { editFollowing } from '~/redux/reducers/authSlice';
+import { follow, unfollow } from '~/redux/profile/profileActions';
 
 const cx = classNames.bind(styles);
 
 function FollowButton({ user }) {
     const [isFollowed, setIsFollowed] = useState(false);
 
-    const auth = useSelector((state) => state.auth.auth);
-    const userProfile = useSelector((state) => state.user.anUser);
+    const { auth, profile } = useSelector((state) => state);
 
     const dispatch = useDispatch();
 
     const handleFollow = () => {
-        let newUser = { ...user, followers: [...user.followers, auth.user] };
-        dispatch(editFollower(newUser));
-        dispatch(editFollowing({ newUser, addFollowingOfCurrentUser: true }));
-        dispatch(followUser({ users: userProfile.users, user, auth }));
         setIsFollowed(true);
+        dispatch(follow({ users: profile.users, user, auth }));
     };
 
     const handleUnFollow = () => {
-        let newUser = { ...user, followers: user.followers.filter((item) => item._id !== auth.user._id) };
-        dispatch(editFollower(newUser));
-        dispatch(editFollowing({ newUser }));
-        dispatch(unfollowUser({ users: userProfile.users, user, auth }));
         setIsFollowed(false);
+        dispatch(unfollow({ users: profile.users, user, auth }));
     };
 
     useEffect(() => {
