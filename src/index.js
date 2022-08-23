@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = 5000;
+const SocketServer = require('./socketServer');
 
 const db = require('./config/db');
 const route = require('./routes');
@@ -27,7 +28,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
-    console.log(socket.id + ' connected');
+    SocketServer(socket);
 });
 
 // Routes init

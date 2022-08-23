@@ -51,13 +51,14 @@ export const deletePost = (idPost) => async (dispatch) => {
 };
 
 export const likePost =
-    ({ post, user }) =>
+    ({ post, user, socket }) =>
     async (dispatch) => {
         const newPost = { ...post, likes: [...post.likes, user] };
+        dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+        socket.emit('likePost', newPost);
         try {
             // dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isLoading: true } });
             await axios.patch(`http://localhost:5000/api/v1/post/like/${post._id}`, { user: user });
-            dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
             // dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: {} });
         } catch (error) {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isError: true } });
@@ -65,13 +66,15 @@ export const likePost =
     };
 
 export const unlikePost =
-    ({ post, user }) =>
+    ({ post, user, socket }) =>
     async (dispatch) => {
         const newPost = { ...post, likes: post.likes.filter((item) => item._id !== user._id) };
+        dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+        socket.emit('unLikePost', newPost);
+
         try {
             // dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isLoading: true } });
             await axios.patch(`http://localhost:5000/api/v1/post/unlike/${post._id}`, { user: user });
-            dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
             // dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: {} });
         } catch (error) {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isError: true } });

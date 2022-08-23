@@ -10,7 +10,7 @@ export const getProfileUsers =
         if (users.every((user) => user.username !== username)) {
             try {
                 dispatch({ type: PROFILE_TYPES.LOADING, payload: true });
-                const res = await axios.get(`http://localhost:5000/api/v1/users/${username}`);
+                const res = await axios.get(`/api/v1/users/${username}`);
                 dispatch({ type: PROFILE_TYPES.GET_USER, payload: res.data });
                 dispatch({ type: PROFILE_TYPES.LOADING, payload: false });
             } catch (err) {
@@ -24,7 +24,7 @@ export const updateProfileUser =
     async (dispatch) => {
         try {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isLoading: true } });
-            await axios.patch(`http://localhost:5000/api/v1/users/edit`, data);
+            await axios.patch(`/api/v1/users/edit`, data);
             dispatch({ type: AUTH_TYPES.AUTH, payload: { ...auth, user: { ...auth.user, ...data } } });
 
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: {} });
@@ -32,7 +32,7 @@ export const updateProfileUser =
     };
 
 export const follow =
-    ({ users, user, auth }) =>
+    ({ users, user, auth, socket }) =>
     async (dispatch) => {
         let newUser = { ...user, followers: [...user.followers, auth.user] };
         dispatch({ type: PROFILE_TYPES.FOLLOW, payload: newUser });
@@ -41,17 +41,19 @@ export const follow =
             type: AUTH_TYPES.AUTH,
             payload: { ...auth, user: { ...auth.user, following: [...auth.user.following, newUser] } },
         });
+
         try {
-            await axios.patch(`http://localhost:5000/api/v1/users/${user._id}/follow`, {
+            const res = await axios.patch(`/api/v1/users/${user._id}/follow`, {
                 user: auth.user,
             });
+            socket.emit('follow', res.data.newUser);
         } catch (error) {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isError: true } });
         }
     };
 
 export const unfollow =
-    ({ users, user, auth }) =>
+    ({ users, user, auth, socket }) =>
     async (dispatch) => {
         let newUser = { ...user, followers: user.followers.filter((item) => item._id !== auth.user._id) };
         dispatch({ type: PROFILE_TYPES.UNFOLLOW, payload: newUser });
@@ -62,10 +64,12 @@ export const unfollow =
                 user: { ...auth.user, following: auth.user.following.filter((item) => item._id !== newUser._id) },
             },
         });
+
         try {
-            await axios.patch(`http://localhost:5000/api/v1/users/${user._id}/unfollow`, {
+            const res = await axios.patch(`/api/v1/users/${user._id}/unfollow`, {
                 user: auth.user,
             });
+            socket.emit('unFollow', res.data.newUser);
         } catch (error) {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isError: true } });
         }

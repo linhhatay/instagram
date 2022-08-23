@@ -3,13 +3,16 @@ import { NOTIFY_TYPES } from '../notify/notifyConstants';
 import { POST_TYPES } from '../post/postConstants';
 
 export const createComment =
-    ({ post, comment, auth }) =>
+    ({ post, comment, auth, socket }) =>
     async (dispatch) => {
         const newPost = { ...post, comments: [...post.comments, comment] };
         dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+        socket.emit('createComment', newPost);
         try {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isLoading: true } });
             await axios.post('http://localhost:5000/api/v1/comment/create', comment);
+            dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: {} });
         } catch (error) {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isError: true } });
@@ -17,7 +20,7 @@ export const createComment =
     };
 
 export const deleteComment =
-    ({ post, comment, auth }) =>
+    ({ post, comment, auth, socket }) =>
     async (dispatch) => {
         const newPost = {
             ...post,
@@ -25,6 +28,7 @@ export const deleteComment =
         };
 
         dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost });
+        socket.emit('deleteComment', newPost);
 
         try {
             dispatch({ type: NOTIFY_TYPES.NOTIFY, payload: { isLoading: true } });

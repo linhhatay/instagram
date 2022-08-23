@@ -33,7 +33,7 @@ class PostController {
         try {
             const posts = await Post.find({})
                 .sort({ createdAt: -1 })
-                .populate('author', '_id username fullname avatar')
+                .populate('author', '_id username fullname avatar followers')
                 .populate({
                     path: 'comments',
                     populate: {

@@ -24,7 +24,7 @@ function PostItem({ data }) {
     const [isMore, setIsMore] = useState(true);
     const [comment, setComment] = useState('');
 
-    const { auth } = useSelector((state) => state);
+    const { auth, socket } = useSelector((state) => state);
 
     const dispatch = useDispatch();
 
@@ -42,13 +42,12 @@ function PostItem({ data }) {
     };
 
     const handleLikePost = () => {
-        const state = { post: data, user: auth.user._id };
         if (isLike) {
             setIsLike(false);
-            dispatch(unlikePost(state));
+            dispatch(unlikePost({ post: data, user: auth.user._id, socket }));
         } else {
             setIsLike(true);
-            dispatch(likePost(state));
+            dispatch(likePost({ post: data, user: auth.user._id, socket }));
         }
     };
 
@@ -62,7 +61,7 @@ function PostItem({ data }) {
             content: comment,
             author: auth.user._id,
         };
-        dispatch(createComment({ post: data, comment: state, auth }));
+        dispatch(createComment({ post: data, comment: state, auth, socket }));
         setComment('');
     };
 
@@ -80,7 +79,7 @@ function PostItem({ data }) {
                 <div className={cx('info')}>
                     <Image className={cx('avatar')} src={data.author.avatar} />
                     <div className={cx('desc')}>
-                        <Link to="" className={cx('user-name')}>
+                        <Link to={data.author.username} className={cx('user-name')}>
                             {data.author.username}
                         </Link>
                         <div className={cx('location')}>{data.location}</div>

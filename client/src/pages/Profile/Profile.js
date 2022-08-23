@@ -26,14 +26,15 @@ function Profile() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (username === auth.user.username) {
-            setUserData([auth.user]);
-        } else {
-            dispatch(getProfileUsers({ users: profile.users, username, auth }));
-            const newData = profile.users.filter((user) => user.username === username);
-            setUserData(newData);
-        }
+        // if (username === auth.user.username) {
+        //     setUserData([auth.user]);
+        // } else {
+        dispatch(getProfileUsers({ users: profile.users, username, auth }));
+        const newData = profile.users.filter((user) => user.username === username);
+        setUserData(newData);
+        // }
     }, [username, auth, dispatch, profile.users]);
+    console.log(userData);
 
     return (
         <div className={cx('wrapper')}>
@@ -247,7 +248,7 @@ function Profile() {
                             TAGGED
                         </Button>
                     </div>
-                    <Outlet />
+                    <Outlet context={item} />
                     <Footer />
                 </div>
             ))}

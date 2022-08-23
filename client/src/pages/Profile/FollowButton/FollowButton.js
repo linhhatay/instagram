@@ -11,18 +11,18 @@ const cx = classNames.bind(styles);
 function FollowButton({ user }) {
     const [isFollowed, setIsFollowed] = useState(false);
 
-    const { auth, profile } = useSelector((state) => state);
+    const { auth, profile, socket } = useSelector((state) => state);
 
     const dispatch = useDispatch();
 
-    const handleFollow = () => {
+    const handleFollow = async () => {
         setIsFollowed(true);
-        dispatch(follow({ users: profile.users, user, auth }));
+        await dispatch(follow({ users: profile.users, user, auth, socket }));
     };
 
-    const handleUnFollow = () => {
+    const handleUnFollow = async () => {
         setIsFollowed(false);
-        dispatch(unfollow({ users: profile.users, user, auth }));
+        await dispatch(unfollow({ users: profile.users, user, auth, socket }));
     };
 
     useEffect(() => {

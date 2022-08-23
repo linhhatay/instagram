@@ -24,14 +24,14 @@ function Suggested() {
 
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('account')}>
+            <Link to={auth.user.username} className={cx('account')}>
                 <Image className={cx('avatar')} src={auth.user.avatar} />
                 <div className={cx('info')}>
                     <div className={cx('user-name')}>{auth.user.username}</div>
                     <h4 className={cx('name')}>{auth.user.fullname}</h4>
                 </div>
                 <button className={cx('switch')}>Switch</button>
-            </div>
+            </Link>
             <div className={cx('suggestions')}>
                 <div className={cx('label')}>
                     <h4 className={cx('title')}>Suggestions For You</h4>

@@ -11,16 +11,17 @@ import Albums from './pages/Profile/Albums';
 import Tagged from './pages/Profile/Tagged';
 import Notify from './components/Notify';
 import { SOCKET_TYPES } from './redux/socket/socketConstanst';
+import SocketClient from './socketClient';
 
 function App() {
     const dispatch = useDispatch();
     const { auth } = useSelector((state) => state);
 
     useEffect(() => {
+        dispatch(refreshToken());
         const socket = io();
         dispatch({ type: SOCKET_TYPES.SOCKET, payload: socket });
         return () => socket.close();
-        // dispatch(refreshToken());
     }, [dispatch]);
 
     const routes = auth.token ? privateRoutes : publicRoutes;
@@ -29,6 +30,7 @@ function App() {
         <Router>
             <Notify />
             <div className="App">
+                {auth.token && <SocketClient />}
                 <Routes>
                     {routes.map((route, index) => {
                         const Page = route.component;

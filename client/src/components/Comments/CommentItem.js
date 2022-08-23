@@ -3,16 +3,17 @@ import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { HeartIcon } from '~/components/Icons';
 import styles from './Comments.module.scss';
 import Tippy from '@tippyjs/react/headless';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteComment } from '~/redux/comments/commentActions';
 
 const cx = classNames.bind(styles);
 
 function CommentItem({ post, data }) {
     const dispatch = useDispatch();
+    const { socket } = useSelector((state) => state);
 
     const handleRemoveComment = () => {
-        dispatch(deleteComment({ post, comment: data }));
+        dispatch(deleteComment({ post, comment: data, socket }));
     };
 
     return (
